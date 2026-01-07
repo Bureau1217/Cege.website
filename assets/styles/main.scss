@@ -1,0 +1,977 @@
+/* ==========================================================================
+  VARIABLES CSS (seront injectées dynamiquement depuis le CMS)
+  ========================================================================== */
+
+:root {
+  // Couleurs par défaut (remplacées par le CMS)
+  --color-primary: #18009e;
+  --color-secondary: #9fb3fa;
+  --color-accent: #1ee9a9;
+  --color-neutral: #ffffff;
+  --color-dark: #000000;
+  --color-background: #f5f5f5;
+
+  // Typographie
+  --text-base-size: 1.3rem;
+  --text-base-weight: 500;
+  --text-small-size: 1.2rem;
+  --text-small-weight: 500;
+
+  // Espacement
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1rem;
+  --space-l: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  --space-xxxl: 5rem;
+
+  // Border radius
+  --radius-s: 0.5rem;
+  --radius-m: 1rem;
+  --radius-l: 1.5rem;
+  --radius-full: 9999px;
+
+  // Conteneur
+  --container-width: min(100%, 1700px);
+  --page-gutter: var(--space-l);
+  --page-gutter-mobile: var(--space-l);
+  --container-padding: var(--page-gutter);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: var(--page-gutter-mobile);
+  }
+}
+
+/* ==========================================================================
+  RESET & BASE
+  ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--color-background, #f5f5f5);
+  color: var(--color-dark);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-l);
+}
+
+/* ==========================================================================
+  TYPOGRAPHIE (Google Fonts sera chargée dynamiquement)
+  ========================================================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-dark);
+  font-family: 'Archivo', sans-serif;
+}
+
+h1 {
+  font-size: clamp(2.7rem, 4.6vw, 3.9rem);
+  margin-bottom: var(--space-l);
+  font-weight: 600;
+}
+
+h2 {
+  font-size: clamp(2.1rem, 3.5vw, 3rem);
+  margin-bottom: var(--space-l);
+  font-weight: 600;
+}
+
+h3 {
+  font-size: clamp(1.7rem, 2.9vw, 2.3rem);
+  margin-bottom: var(--space-m);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.45rem;
+  margin-bottom: var(--space-s);
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: var(--space-m);
+  line-height: 1.7;
+  font-size: var(--text-base-size);
+  font-weight: var(--text-base-weight);
+}
+
+a {
+  color: var(--color-primary);
+  transition: color var(--transition-base);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+/* ==========================================================================
+  LAYOUT UTILITAIRES
+  ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+.section {
+  padding-block: var(--space-xxl);
+
+  @media (max-width: 768px) {
+    padding-block: var(--space-xl);
+  }
+}
+
+/* ==========================================================================
+  SECTION BLOCKS - Styles globaux pour toutes les sections
+  ========================================================================== */
+
+.section-block {
+  position: relative;
+  margin: var(--space-xl) var(--page-gutter);
+  padding: var(--space-xl) var(--page-gutter);
+  border-radius: 32px;
+  width: 100%;
+  max-width: calc(100% - (var(--page-gutter) * 2));
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    margin: var(--space-l) var(--page-gutter-mobile);
+    padding: var(--space-l) var(--page-gutter-mobile);
+    max-width: calc(100% - (var(--page-gutter-mobile) * 2));
+  }
+}
+
+/* ==========================================================================
+  TYPOGRAPHIE PARTAGEE (SECTIONS CMS)
+  ========================================================================== */
+
+.section-title-wrapper {
+  padding: var(--space-l) 0 var(--space-l) 0;
+  scroll-margin-top: 80px;
+}
+
+.section-title {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  opacity: 0.9;
+}
+
+.section-title h1,
+.section-title h2,
+.section-title h3,
+.section-title h4 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.section-title p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.column-heading {
+  margin: 0;
+  font-size: clamp(2.05rem, 3.7vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+  .section-title-wrapper {
+    padding: 0 0 var(--space-xl) 0;
+  }
+}
+
+/* ==========================================================================
+  COULEURS UTILITAIRES
+  ========================================================================== */
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
+.bg-neutral {
+  background-color: var(--color-neutral);
+}
+
+.bg-dark {
+  background-color: var(--color-dark);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.text-neutral {
+  color: var(--color-neutral);
+}
+
+.text-dark {
+  color: var(--color-dark);
+}
+
+.color-primary {
+  color: var(--color-primary);
+}
+
+.color-secondary {
+  color: var(--color-secondary);
+}
+
+.color-accent {
+  color: var(--color-accent);
+}
+
+.color-neutral {
+  color: var(--color-neutral);
+}
+
+.color-dark {
+  color: var(--color-dark);
+}
+
+/* ==========================================================================
+  FLEX UTILITAIRES
+  ========================================================================== */
+
+.flex {
+  display: flex;
+  gap: var(--space-m);
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+/* ==========================================================================
+  GRID UTILITAIRES
+  ========================================================================== */
+
+.grid {
+  display: grid;
+  gap: var(--space-l);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* ==========================================================================
+  BORDER RADIUS UTILITAIRES
+  ========================================================================== */
+
+.rounded-s {
+  border-radius: var(--radius-s);
+}
+
+.rounded-m {
+  border-radius: var(--radius-m);
+}
+
+.rounded-l {
+  border-radius: var(--radius-l);
+}
+
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+  ESPACEMENT UTILITAIRES
+  ========================================================================== */
+
+.mt-0 {
+  margin-top: 0 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-s {
+  margin-top: var(--space-s);
+}
+
+.mt-m {
+  margin-top: var(--space-m);
+}
+
+.mt-l {
+  margin-top: var(--space-l);
+}
+
+.mt-xl {
+  margin-top: var(--space-xl);
+}
+
+.mb-s {
+  margin-bottom: var(--space-s);
+}
+
+.mb-m {
+  margin-bottom: var(--space-m);
+}
+
+.mb-l {
+  margin-bottom: var(--space-l);
+}
+
+.mb-xl {
+  margin-bottom: var(--space-xl);
+}
+
+/* ==========================================================================
+  TRANSITIONS & ANIMATIONS
+  ========================================================================== */
+
+.transition {
+  transition: all 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s ease;
+}
+
+.scale-up {
+  animation: scaleUp 0.6s ease;
+}
+
+/* ==========================================================================
+  BUTTONS & INTERACTIVE ELEMENTS
+  ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-m) var(--space-xl);
+  border: none;
+  border-radius: var(--radius-m);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  gap: var(--space-s);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &-primary {
+    background-color: var(--color-primary);
+    color: var(--color-neutral);
+
+    &:hover {
+      box-shadow: 0 10px 30px rgba(24, 0, 158, 0.3);
+    }
+  }
+
+  &-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-dark);
+
+    &:hover {
+      box-shadow: 0 10px 30px rgba(159, 179, 250, 0.3);
+    }
+  }
+
+  &-accent {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+
+    &:hover {
+      box-shadow: 0 10px 30px rgba(30, 233, 169, 0.3);
+    }
+  }
+
+  &-outline {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+
+    &:hover {
+      background-color: var(--color-primary);
+      color: var(--color-neutral);
+    }
+  }
+}
+
+/* ==========================================================================
+  CARDS & PANELS
+  ========================================================================== */
+
+.card {
+  padding: var(--space-l);
+  background-color: var(--color-neutral);
+  border-radius: var(--radius-m);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+  }
+
+  &--elevated {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &--flat {
+    box-shadow: none;
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  &--bordered {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+}
+
+/* ==========================================================================
+  DIVIDERS & SEPARATORS
+  ========================================================================== */
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  margin-block: var(--space-xl);
+
+  &--short {
+    width: 60px;
+    margin-inline: auto;
+  }
+
+  &--accent {
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  }
+}
+
+/* ==========================================================================
+  BADGES & LABELS
+  ========================================================================== */
+
+.badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-m);
+  background-color: var(--color-primary);
+  color: var(--color-neutral);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &--accent {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+  }
+
+  &--secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-dark);
+  }
+
+  &--outline {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+  }
+}
+
+/* ==========================================================================
+  SHADOWS & EFFECTS
+  ========================================================================== */
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.glow {
+  box-shadow: 0 0 20px rgba(30, 233, 169, 0.3);
+}
+
+/* ==========================================================================
+  OPACITY & VISIBILITY
+  ========================================================================== */
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ==========================================================================
+  SPACING UTILITIES - EXTENDED
+  ========================================================================== */
+
+.px-auto {
+  padding-inline: auto;
+}
+
+.py-auto {
+  padding-block: auto;
+}
+
+.pt-s {
+  padding-top: var(--space-s);
+}
+
+.pt-m {
+  padding-top: var(--space-m);
+}
+
+.pt-l {
+  padding-top: var(--space-l);
+}
+
+.pt-xl {
+  padding-top: var(--space-xl);
+}
+
+.pt-xxl {
+  padding-top: var(--space-xxl);
+}
+
+.pb-s {
+  padding-bottom: var(--space-s);
+}
+
+.pb-m {
+  padding-bottom: var(--space-m);
+}
+
+.pb-l {
+  padding-bottom: var(--space-l);
+}
+
+.pb-xl {
+  padding-bottom: var(--space-xl);
+}
+
+.pb-xxl {
+  padding-bottom: var(--space-xxl);
+}
+
+.px-s {
+  padding-inline: var(--space-s);
+}
+
+.px-m {
+  padding-inline: var(--space-m);
+}
+
+.px-l {
+  padding-inline: var(--space-l);
+}
+
+.px-xl {
+  padding-inline: var(--space-xl);
+}
+
+.py-s {
+  padding-block: var(--space-s);
+}
+
+.py-m {
+  padding-block: var(--space-m);
+}
+
+.py-l {
+  padding-block: var(--space-l);
+}
+
+.py-xl {
+  padding-block: var(--space-xl);
+}
+
+.gap-s {
+  gap: var(--space-s) !important;
+}
+
+.gap-m {
+  gap: var(--space-m) !important;
+}
+
+.gap-l {
+  gap: var(--space-l) !important;
+}
+
+.gap-xl {
+  gap: var(--space-xl) !important;
+}
+
+.gap-xxl {
+  gap: var(--space-xxl) !important;
+}
+
+/* ==========================================================================
+  TEXT UTILITIES - EXTENDED
+  ========================================================================== */
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-base {
+  font-size: 1rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.text-3xl {
+  font-size: 2rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.leading-tight {
+  line-height: 1.2;
+}
+
+.leading-normal {
+  line-height: 1.6;
+}
+
+.leading-relaxed {
+  line-height: 1.8;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+  DISPLAY & POSITIONING
+  ========================================================================== */
+
+.block {
+  display: block;
+}
+
+.inline {
+  display: inline;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.sticky {
+  position: sticky;
+}
+
+/* ==========================================================================
+  RESPONSIVE UTILITIES
+  ========================================================================== */
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none;
+  }
+
+  .show-mobile {
+    display: block;
+  }
+
+  .text-mobile-sm {
+    font-size: 0.875rem;
+  }
+
+  .text-mobile-base {
+    font-size: 1rem;
+  }
+
+  .mt-mobile-m {
+    margin-top: var(--space-m);
+  }
+
+  .mt-mobile-l {
+    margin-top: var(--space-l);
+  }
+
+  .mb-mobile-m {
+    margin-bottom: var(--space-m);
+  }
+
+  .mb-mobile-l {
+    margin-bottom: var(--space-l);
+  }
+
+  .px-mobile-s {
+    padding-inline: var(--space-s);
+  }
+
+  .px-mobile-m {
+    padding-inline: var(--space-m);
+  }
+
+  .py-mobile-m {
+    padding-block: var(--space-m);
+  }
+
+  .py-mobile-l {
+    padding-block: var(--space-l);
+  }
+}
+
+@media (min-width: 1024px) {
+  .show-desktop {
+    display: block;
+  }
+
+  .hide-desktop {
+    display: none;
+  }
+}
