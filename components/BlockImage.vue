@@ -12,11 +12,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{
   block: CMS_Block_Image
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
 const resolveImageRef = (value: unknown) => {
   if (!value) return null

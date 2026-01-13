@@ -1,18 +1,26 @@
 <template>
   <main class="v-contact">
-    <template v-if="data && data.status === 'ok'">
+    <template v-if="data?.status === 'ok' && contact">
       <!-- Formulaire Section -->
       <div id="formulaire">
         <SectionFormulaire
-          :titre="data.result.contact.formulaire_titre || '<h2>Formulaire</h2>'"
-          :blocks="data.result.contact.formulaire || []"
+          :titre="contact.formulaire_titre || '<h2>Formulaire</h2>'"
+          :blocks="contact.formulaire || []"
           variant="white"
           layout="split"
-          :introText="data.result.contact.formulaire_intro || ''"
+          :introText="contact.formulaire_intro || ''"
         />
       </div>
     </template>
 
+    <template v-else>
+      <div class="error-state">
+        <h1>Erreur de chargement</h1>
+        <p>Impossible de charger le contenu depuis le CMS.</p>
+        <p v-if="data?.message">{{ data.message }}</p>
+        <p v-if="pending">Chargement en cours...</p>
+      </div>
+    </template>
   </main>
 </template>
 
@@ -25,7 +33,7 @@ type FetchData = CMS_API_Response & {
 }
 
 // Fetch des données avec KQL
-const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
+const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   lazy: true,
   method: 'POST',
   body: {
@@ -45,6 +53,8 @@ const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   }
 })
 
+const contact = computed(() => data.value?.result?.contact ?? null)
+
 useHead({
   title: 'Contact - CEGE',
   meta: [
@@ -56,5 +66,20 @@ useHead({
 <style scoped lang="scss">
 .v-contact {
   width: 100%;
+}
+
+.error-state {
+  text-align: center;
+  padding: var(--space-xxxl);
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--space-l);
+  }
+
+  p {
+    color: var(--color-dark);
+    opacity: 0.7;
+  }
 }
 </style>

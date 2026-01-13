@@ -100,7 +100,7 @@ const props = defineProps<{
   images: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.images || []))
 
 // Create UUID -> image map for quick lookup
 const imagesByUuid = computed(() => {

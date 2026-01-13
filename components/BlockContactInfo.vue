@@ -12,7 +12,7 @@
         :class="{ highlight: item.highlight === 'true' }"
       >
         <div v-if="item.icon && item.icon.length > 0" class="contact-icon">
-          <img :src="getFileUrl(item.icon[0])" :alt="item.label || ''" />
+          <img :src="getFileUrl(item.icon)" :alt="item.label || ''" />
         </div>
 
         <div class="contact-content">
@@ -25,14 +25,31 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{
   block: CMS_Block_ContactInfo
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
-const getFileUrl = (fileId: string) => {
-  return getCmsImageUrl(fileId)
+const resolveFileRef = (value: unknown) => {
+  if (!value) return null
+  if (Array.isArray(value)) return resolveFileRef(value[0])
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') {
+    const file = value as { uuid?: string; url?: string }
+    if (file.url) return file.url
+    if (file.uuid) return `file://${file.uuid}`
+  }
+  return null
+}
+
+const getFileUrl = (value: unknown) => {
+  const ref = resolveFileRef(value)
+  if (!ref) return ''
+  return getCmsImageUrl(ref)
 }
 </script>
 

@@ -15,7 +15,7 @@
         {{ item.number }}
       </div>
       <div v-if="item.icon && item.icon.length > 0" class="item-icon">
-        <img :src="getFileUrl(item.icon[0])" :alt="item.title || ''" />
+        <img :src="getFileUrl(item.icon)" :alt="item.title || ''" />
       </div>
       <h4 v-if="item.title" class="item-title">{{ item.title }}</h4>
       <p v-if="item.text" class="item-text">{{ item.text }}</p>
@@ -24,11 +24,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{
   block: CMS_Block_FeaturesGrid
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
 const getColumnCount = () => {
   const cols = props.block.content.columns
@@ -38,8 +41,22 @@ const getColumnCount = () => {
   return '3'
 }
 
-const getFileUrl = (fileId: string) => {
-  return getCmsImageUrl(fileId)
+const resolveFileRef = (value: unknown) => {
+  if (!value) return null
+  if (Array.isArray(value)) return resolveFileRef(value[0])
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') {
+    const file = value as { uuid?: string; url?: string }
+    if (file.url) return file.url
+    if (file.uuid) return `file://${file.uuid}`
+  }
+  return null
+}
+
+const getFileUrl = (value: unknown) => {
+  const ref = resolveFileRef(value)
+  if (!ref) return ''
+  return getCmsImageUrl(ref)
 }
 </script>
 

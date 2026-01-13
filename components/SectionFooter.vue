@@ -121,7 +121,8 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
   }
 })
 
-const { getCmsImageUrl } = useCmsImage()
+const footerFiles = computed(() => footerData.value?.files || [])
+const { getCmsImageUrl } = useCmsImage(footerFiles)
 
 const footerNavItems = [
   { to: '/', label: 'Accueil' },
@@ -155,8 +156,6 @@ const extractFileRef = (value: string) => {
   return value.trim()
 }
 
-const normalizeFileUuid = (value: string) => value.replace(/^file:\/\//, '')
-
 const resolveIcon = (fieldValue: any) => {
   if (!fieldValue) return null
   if (Array.isArray(fieldValue)) {
@@ -175,8 +174,7 @@ const resolveIcon = (fieldValue: any) => {
   const normalized = extractFileRef(fieldValue)
   const file = footerFilesByUuid.value[normalized] || footerFilesByUuid.value[normalized.replace('file://', '')]
   if (file) {
-    const fileUuid = typeof file.uuid === 'string' ? normalizeFileUuid(file.uuid) : file.uuid
-    return { url: `file://${fileUuid}`, alt: file.alt || '' }
+    return { url: file.url, alt: file.alt || '' }
   }
 
   return { url: normalized, alt: '' }

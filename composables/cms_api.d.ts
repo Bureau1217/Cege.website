@@ -5,6 +5,7 @@
 type CMS_API_Response = {
     code: number,
     status: 'ok' | string,
+    message?: string,
 }
 
 type CMS_API_Image = {

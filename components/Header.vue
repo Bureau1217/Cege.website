@@ -66,7 +66,8 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
   }
 })
 
-const { getCmsImageUrl } = useCmsImage()
+const homeFiles = computed(() => homeData.value?.files || [])
+const { getCmsImageUrl } = useCmsImage(homeFiles)
 
 const homeData = computed(() => {
   if (data.value && data.value.status === 'ok') {
@@ -93,8 +94,6 @@ const extractFileRef = (value: string) => {
   return value.trim()
 }
 
-const normalizeFileUuid = (value: string) => value.replace(/^file:\/\//, '')
-
 const resolveLogo = (fieldValue: any) => {
   if (!fieldValue) return null
   if (Array.isArray(fieldValue)) {
@@ -113,8 +112,7 @@ const resolveLogo = (fieldValue: any) => {
   const normalized = extractFileRef(fieldValue)
   const file = homeFilesByUuid.value[normalized] || homeFilesByUuid.value[normalized.replace('file://', '')]
   if (file) {
-    const fileUuid = typeof file.uuid === 'string' ? normalizeFileUuid(file.uuid) : file.uuid
-    return { url: `file://${fileUuid}`, alt: file.alt || '', extension: file.extension }
+    return { url: file.url, alt: file.alt || '', extension: file.extension }
   }
 
   return { url: normalized, alt: '', extension: undefined }

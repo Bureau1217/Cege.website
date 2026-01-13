@@ -1,22 +1,31 @@
 <template>
   <main class="v-mentions">
-    <template v-if="data && data.status === 'ok'">
+    <template v-if="data?.status === 'ok' && mentions">
       <StyleBlock variant="white">
         <div class="mentions-grid">
           <div class="mentions-left">
             <h1 class="mentions-title">
-              {{ data.result.mentions.title || 'Mentions legales' }}
+              {{ mentions.title || 'Mentions legales' }}
             </h1>
           </div>
           <div class="mentions-right">
             <div
-              v-if="data.result.mentions.texte"
+              v-if="mentions.texte"
               class="mentions-text"
-              v-html="data.result.mentions.texte"
+              v-html="mentions.texte"
             />
           </div>
         </div>
       </StyleBlock>
+    </template>
+
+    <template v-else>
+      <div class="error-state">
+        <h1>Erreur de chargement</h1>
+        <p>Impossible de charger le contenu depuis le CMS.</p>
+        <p v-if="data?.message">{{ data.message }}</p>
+        <p v-if="pending">Chargement en cours...</p>
+      </div>
     </template>
   </main>
 </template>
@@ -30,7 +39,7 @@ type FetchData = CMS_API_Response & {
   }
 }
 
-const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
+const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   lazy: true,
   method: 'POST',
   body: {
@@ -47,6 +56,8 @@ const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
     }
   }
 })
+
+const mentions = computed(() => data.value?.result?.mentions ?? null)
 
 useHead({
   title: 'Mentions legales - CEGE'
@@ -149,6 +160,21 @@ useHead({
 
   .mentions-left {
     position: static;
+  }
+}
+
+.error-state {
+  text-align: center;
+  padding: var(--space-xxxl);
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--space-l);
+  }
+
+  p {
+    color: var(--color-dark);
+    opacity: 0.7;
   }
 }
 </style>

@@ -74,6 +74,7 @@
         <SectionAvis
           :titre="data.result.home.avis_titre || '<h2>Avis</h2>'"
           :blocks="data.result.home.avis"
+          :files="data.result.home.images || []"
         />
       </section>
 
@@ -84,6 +85,7 @@
           :key="block.id || idx"
           :is="getImageBlockComponent(block.type)"
           :block="block"
+          :files="data.result.home.images || []"
         />
       </div>
 

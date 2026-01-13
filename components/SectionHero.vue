@@ -23,11 +23,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{
   block: CMS_Block_Hero
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
 // Récupérer l'URL de l'image depuis le file://id
 const imageUrl = computed(() => {

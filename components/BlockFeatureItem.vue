@@ -28,11 +28,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{
   block: CMS_Block_FeatureItem
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
 const resolveIconRef = (value: unknown) => {
   if (!value) return null

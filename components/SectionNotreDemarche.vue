@@ -176,7 +176,7 @@ const props = defineProps<{
   schemaOnly?: boolean
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.images || []))
 
 const schemaSteps = [1, 2, 3, 4, 5, 6, 7]
 

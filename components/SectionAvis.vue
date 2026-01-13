@@ -23,7 +23,7 @@
         <component
           v-else
           :is="getBlockComponent(block.type)"
-          :block="block"
+          v-bind="getBlockProps(block)"
         />
       </template>
     </div>
@@ -47,6 +47,7 @@ const props = withDefaults(
   defineProps<{
     titre?: string
     blocks: any[]
+    files?: any[]
     sectionId?: string
     variant?: 'white' | 'primary' | 'transparent'
   }>(),
@@ -68,6 +69,14 @@ const getBlockComponent = (type: string) => {
     'button': BlockButton,
   }
   return componentMap[type] || 'div'
+}
+
+const getBlockProps = (block: any) => {
+  const withFiles = ['image', 'feature-item', 'features-grid', 'contact-info']
+  if (withFiles.includes(block.type)) {
+    return { block, files: props.files }
+  }
+  return { block }
 }
 
 const getHeadingTag = (level?: string) => {

@@ -15,9 +15,10 @@ import { useCmsImage } from '@/composables/useCmsImage'
 
 const props = defineProps<{
   block: CMS_Block_SectionFullImage
+  files?: any[]
 }>()
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.files || []))
 
 const resolveImageRef = (value: unknown) => {
   if (!value) return null

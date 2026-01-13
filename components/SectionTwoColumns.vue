@@ -124,7 +124,7 @@ const props = withDefaults(
   }
 )
 
-const { getCmsImageUrl } = useCmsImage()
+const { getCmsImageUrl } = useCmsImage(computed(() => props.images || []))
 
 // Create UUID -> image map for quick lookup
 const imagesByUuid = computed(() => {

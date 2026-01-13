@@ -20,9 +20,6 @@ const props = defineProps<{
 
 const content = computed(() => props.block.content || props.block)
 
-console.log('BlockButton received:', props.block)
-console.log('Button content:', content.value)
-
 const getVariant = () => {
   const style = content.value?.style || content.value?.variant
   if (style === 'outline') return 'outline'
@@ -62,13 +59,14 @@ const getAlign = () => {
 
   &--primary {
     background-color: var(--color-accent);
-    color: var(--color-primary);
+    color: #fff;
     border: 2px solid var(--color-accent);
 
     &:hover {
-      background-color: transparent;
-      color: var(--color-primary);
+      background-color: var(--color-accent);
+      color: #fff;
       border: 2px solid var(--color-accent);
+      opacity: 0.9;
     }
   }
 

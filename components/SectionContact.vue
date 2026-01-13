@@ -27,6 +27,7 @@
             <BlockContactInfo
               v-if="item?.type === 'contact-info'"
               :block="item"
+              :files="files"
             />
           </template>
         </div>
@@ -51,6 +52,7 @@ import BlockContactForm from '@/components/BlockContactForm.vue'
 const props = defineProps<{
   titre?: string
   blocks: any[]
+  files?: any[]
   sectionId?: string
 }>()
 

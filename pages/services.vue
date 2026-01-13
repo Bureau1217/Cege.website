@@ -1,22 +1,22 @@
 <template>
   <main class="v-services">
-    <template v-if="data && data.status === 'ok'">
+    <template v-if="data?.status === 'ok' && services">
       <!-- Nos Services -->
       <SectionTwoColumns
         sectionId="nos-services"
-        :titre="data.result.services.nosServices_titre || '<h2>Nos Services</h2>'"
-        :colonneGauche="data.result.services.nosServices_colonne_gauche || []"
-        :colonneDroite="data.result.services.nosServices_colonne_droite || []"
-        :images="data.result.services.images || []"
+        :titre="services.nosServices_titre || '<h2>Nos Services</h2>'"
+        :colonneGauche="services.nosServices_colonne_gauche || []"
+        :colonneDroite="services.nosServices_colonne_droite || []"
+        :images="services.images || []"
       />
 
       <!-- Notre Démarche -->
       <SectionNotreDemarche
         sectionId="notre-demarche"
-        :titre="data.result.services.notreDemarche_titre || '<h2>Notre Démarche</h2>'"
-        :colonneGauche="data.result.services.notreDemarche || []"
+        :titre="services.notreDemarche_titre || '<h2>Notre Démarche</h2>'"
+        :colonneGauche="services.notreDemarche || []"
         :colonneDroite="[]"
-        :images="data.result.services.images || []"
+        :images="services.images || []"
         schemaOnly
       />
 
@@ -24,20 +24,20 @@
       <SectionTwoColumns
         variant="white"
         sectionId="controle-bornes"
-        :titre="data.result.services.controleBornes_titre || '<h2>Contrôle des bornes de recharge</h2>'"
-        :colonneGauche="data.result.services.controleBornes_colonne_gauche || []"
-        :colonneDroite="data.result.services.controleBornes_colonne_droite || []"
-        :images="data.result.services.images || []"
+        :titre="services.controleBornes_titre || '<h2>Contrôle des bornes de recharge</h2>'"
+        :colonneGauche="services.controleBornes_colonne_gauche || []"
+        :colonneDroite="services.controleBornes_colonne_droite || []"
+        :images="services.images || []"
       />
 
       <!-- Contrôles photovoltaïques -->
       <SectionTwoColumns
         variant="white"
         sectionId="controle-photovoltaique"
-        :titre="data.result.services.controlePhotovoltaique_titre || '<h2>Contrôles photovoltaïques</h2>'"
-        :colonneGauche="data.result.services.controlePhotovoltaique_colonne_gauche || []"
-        :colonneDroite="data.result.services.controlePhotovoltaique_colonne_droite || []"
-        :images="data.result.services.images || []"
+        :titre="services.controlePhotovoltaique_titre || '<h2>Contrôles photovoltaïques</h2>'"
+        :colonneGauche="services.controlePhotovoltaique_colonne_gauche || []"
+        :colonneDroite="services.controlePhotovoltaique_colonne_droite || []"
+        :images="services.images || []"
       />
     </template>
 
@@ -46,6 +46,9 @@
       <div class="error-state">
         <h1>Erreur de chargement</h1>
         <p>Impossible de charger le contenu depuis le CMS.</p>
+        <p v-if="data?.message">{{ data.message }}</p>
+        <p v-if="data?.status">Status: {{ data.status }}</p>
+        <p v-if="pending">Chargement en cours...</p>
       </div>
     </template>
   </main>
@@ -60,7 +63,7 @@ type FetchData = CMS_API_Response & {
 }
 
 // Fetch des données avec KQL - même pattern que MSS AVOCATES
-const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
+const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   lazy: true,
   method: 'POST',
   body: {
@@ -105,6 +108,8 @@ const { data } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
     }
   }
 })
+
+const services = computed(() => data.value?.result?.services ?? null)
 
 useHead({
   title: 'Services - CEGE',
