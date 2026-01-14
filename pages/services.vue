@@ -59,6 +59,7 @@
 type FetchData = CMS_API_Response & {
   result: {
     services: CMS_API_ServicesPage
+    siteSeo: any
   }
 }
 
@@ -69,11 +70,41 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   body: {
     query: 'site',
     select: {
+      siteSeo: {
+        title: 'site.title',
+        metaTemplate: 'site.metaTemplate.value',
+        metaDescription: 'site.metaDescription.value',
+        ogTemplate: 'site.ogTemplate.value',
+        ogDescription: 'site.ogDescription.value',
+        ogImage: 'site.ogImage.value',
+        twitterCardType: 'site.twitterCardType.value',
+        twitterAuthor: 'site.twitterAuthor.value',
+        files: {
+          query: 'site.files',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value'
+          }
+        }
+      },
       services: {
         query: "site.find('services')",
         select: {
           title: true,
           slug: true,
+          seo: {
+            metaTitle: 'page.metaTitle.value',
+            metaDescription: 'page.metaDescription.value',
+            metaTemplate: 'page.metaTemplate.value',
+            useTitleTemplate: 'page.useTitleTemplate.value',
+            ogTemplate: 'page.ogTemplate.value',
+            useOgTemplate: 'page.useOgTemplate.value',
+            ogDescription: 'page.ogDescription.value',
+            ogImage: 'page.ogImage.value',
+            twitterCardType: 'page.twitterCardType.value',
+            twitterAuthor: 'page.twitterAuthor.value'
+          },
 
           nosServices_titre: 'page.nosServices_titre.toBlocks.toHtml',
           nosServices_colonne_gauche: 'page.nosServices_colonne_gauche.toBlocks.toArray',
@@ -110,12 +141,18 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
 })
 
 const services = computed(() => data.value?.result?.services ?? null)
+const siteSeo = computed(() => data.value?.result?.siteSeo ?? null)
+const servicesSeo = computed(() => (data.value?.result?.services as any)?.seo ?? null)
+const seoFiles = computed(() => [
+  ...((data.value?.result?.services as any)?.images || []),
+  ...(siteSeo.value?.files || [])
+])
 
-useHead({
-  title: 'Services - CEGE',
-  meta: [
-    { name: 'description', content: 'Nos services et notre démarche' }
-  ]
+useSeo({
+  page: servicesSeo,
+  site: siteSeo,
+  title: computed(() => (data.value?.result?.services as any)?.title || 'Services'),
+  files: seoFiles
 })
 </script>
 

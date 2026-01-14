@@ -36,6 +36,7 @@ import StyleBlock from '@/components/StyleBlock.vue'
 type FetchData = CMS_API_Response & {
   result: {
     mentions: CMS_API_MentionsLegalesPage
+    siteSeo: any
   }
 }
 
@@ -45,11 +46,41 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   body: {
     query: 'site',
     select: {
-          mentions: {
+      siteSeo: {
+        title: 'site.title',
+        metaTemplate: 'site.metaTemplate.value',
+        metaDescription: 'site.metaDescription.value',
+        ogTemplate: 'site.ogTemplate.value',
+        ogDescription: 'site.ogDescription.value',
+        ogImage: 'site.ogImage.value',
+        twitterCardType: 'site.twitterCardType.value',
+        twitterAuthor: 'site.twitterAuthor.value',
+        files: {
+          query: 'site.files',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value'
+          }
+        }
+      },
+      mentions: {
         query: "site.find('mentions-legales')",
         select: {
           title: true,
           slug: true,
+          seo: {
+            metaTitle: 'page.metaTitle.value',
+            metaDescription: 'page.metaDescription.value',
+            metaTemplate: 'page.metaTemplate.value',
+            useTitleTemplate: 'page.useTitleTemplate.value',
+            ogTemplate: 'page.ogTemplate.value',
+            useOgTemplate: 'page.useOgTemplate.value',
+            ogDescription: 'page.ogDescription.value',
+            ogImage: 'page.ogImage.value',
+            twitterCardType: 'page.twitterCardType.value',
+            twitterAuthor: 'page.twitterAuthor.value'
+          },
           texte: 'page.texte.toBlocks.toHtml'
         }
       }
@@ -58,9 +89,17 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
 })
 
 const mentions = computed(() => data.value?.result?.mentions ?? null)
+const siteSeo = computed(() => data.value?.result?.siteSeo ?? null)
+const mentionsSeo = computed(() => (data.value?.result?.mentions as any)?.seo ?? null)
+const seoFiles = computed(() => [
+  ...(siteSeo.value?.files || [])
+])
 
-useHead({
-  title: 'Mentions legales - CEGE'
+useSeo({
+  page: mentionsSeo,
+  site: siteSeo,
+  title: computed(() => (data.value?.result?.mentions as any)?.title || 'Mentions legales'),
+  files: seoFiles
 })
 </script>
 

@@ -116,6 +116,7 @@ type FetchData = CMS_API_Response & {
   result: {
     home: CMS_API_HomePage
     services: any
+    siteSeo: any
   }
 }
 
@@ -126,6 +127,24 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
   body: {
     query: 'site',
     select: {
+      siteSeo: {
+        title: 'site.title',
+        metaTemplate: 'site.metaTemplate.value',
+        metaDescription: 'site.metaDescription.value',
+        ogTemplate: 'site.ogTemplate.value',
+        ogDescription: 'site.ogDescription.value',
+        ogImage: 'site.ogImage.value',
+        twitterCardType: 'site.twitterCardType.value',
+        twitterAuthor: 'site.twitterAuthor.value',
+        files: {
+          query: 'site.files',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value'
+          }
+        }
+      },
       home: {
         query: "site.find('home')",
         select: {
@@ -134,6 +153,18 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           hero_titre: 'page.hero_titre.toBlocks.toHtml',
           hero_texte: 'page.hero_texte.value',
           hero_image: 'page.hero_image.value',
+          seo: {
+            metaTitle: 'page.metaTitle.value',
+            metaDescription: 'page.metaDescription.value',
+            metaTemplate: 'page.metaTemplate.value',
+            useTitleTemplate: 'page.useTitleTemplate.value',
+            ogTemplate: 'page.ogTemplate.value',
+            useOgTemplate: 'page.useOgTemplate.value',
+            ogDescription: 'page.ogDescription.value',
+            ogImage: 'page.ogImage.value',
+            twitterCardType: 'page.twitterCardType.value',
+            twitterAuthor: 'page.twitterAuthor.value'
+          },
           notreEntreprise_titre: 'page.notreEntreprise_titre.toBlocks.toHtml',
           notreEntreprise_colonne_gauche: 'page.notreEntreprise_colonne_gauche.toBlocks.toArray',
           notreEntreprise_colonne_droite: 'page.notreEntreprise_colonne_droite.toBlocks.toArray',
@@ -240,6 +271,20 @@ const heroImage = computed(() => {
   const home = data.value?.result?.home as any
   if (!home) return null
   return resolveImageFromUuid(home.hero_image, home.images || [])
+})
+
+const siteSeo = computed(() => data.value?.result?.siteSeo ?? null)
+const homeSeo = computed(() => (data.value?.result?.home as any)?.seo ?? null)
+const seoFiles = computed(() => [
+  ...((data.value?.result?.home as any)?.images || []),
+  ...(siteSeo.value?.files || [])
+])
+
+useSeo({
+  page: homeSeo,
+  site: siteSeo,
+  title: computed(() => (data.value?.result?.home as any)?.title || 'CEGE'),
+  files: seoFiles
 })
 
 const heroTitlePlain = computed(() => {
