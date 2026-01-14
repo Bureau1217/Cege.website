@@ -2,10 +2,7 @@
   <div class="block-testimonials">
     <h3 v-if="block.content.title" class="testimonials-title">{{ block.content.title }}</h3>
 
-    <div
-      class="testimonials-grid"
-      :class="`cols-${getColumnCount()}`"
-    >
+    <div class="testimonials-grid">
       <div
         v-for="(testimonial, index) in block.content.testimonials"
         :key="index"
@@ -30,13 +27,6 @@ const props = defineProps<{
   block: CMS_Block_Testimonials
 }>()
 
-const getColumnCount = () => {
-  const cols = props.block.content.columns
-  if (cols === '2 colonnes') return '2'
-  if (cols === '3 colonnes') return '3'
-  if (cols === '4 colonnes') return '4'
-  return '3'
-}
 </script>
 
 <style scoped lang="scss">
@@ -59,18 +49,7 @@ const getColumnCount = () => {
 .testimonials-grid {
   display: grid;
   gap: var(--space-xl);
-
-  &.cols-2 {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  &.cols-3 {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  }
-
-  &.cols-4 {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .testimonial-card {
@@ -165,10 +144,7 @@ const getColumnCount = () => {
 
 @media (max-width: 768px) {
   .testimonials-grid {
-    &.cols-3,
-    &.cols-4 {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: 1fr;
   }
 
   .testimonial-card {
@@ -192,7 +168,6 @@ const getColumnCount = () => {
 
 @media (max-width: 480px) {
   .testimonials-grid {
-    grid-template-columns: 1fr;
     gap: var(--space-m);
   }
 

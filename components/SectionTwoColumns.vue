@@ -196,10 +196,6 @@ const getTextColorClass = (color?: string) => {
 </script>
 
 <style scoped lang="scss">
-.section-title {
-  color: var(--color-primary);
-}
-
 .two-columns-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -219,83 +215,11 @@ const getTextColorClass = (color?: string) => {
   gap: var(--space-xl);
 }
 
-.column-text {
-  font-size: var(--text-base-size);
-  line-height: 1.6;
-  color: var(--color-dark);
-  opacity: 0.85;
-  font-weight: var(--text-base-weight);
-
-  :deep(p) {
-    margin: 0 0 var(--space-m) 0;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :deep(ul),
-  :deep(ol) {
-    margin: 0;
-    padding-left: 1.5rem;
-
-    li {
-      margin-bottom: var(--space-m);
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  &.color-primary {
-    color: var(--color-primary);
-  }
-
-  &.color-secondary {
-    color: var(--color-secondary);
-  }
-
-  &.color-accent {
-    color: var(--color-accent);
-  }
-
-  &.color-neutral {
-    color: var(--color-neutral);
-  }
-
-  &.color-dark {
-    color: var(--color-dark);
-  }
-}
-
 .column-image {
   width: 100%;
   height: auto;
   border-radius: var(--radius-m);
   object-fit: cover;
-}
-
-.column-list {
-  font-size: var(--text-base-size);
-  line-height: 1.8;
-  color: var(--color-dark);
-  opacity: 0.85;
-  font-weight: var(--text-base-weight);
-
-  :deep(ul),
-  :deep(ol) {
-    margin: 0;
-    padding-left: 1.5rem;
-
-    li {
-      margin-bottom: var(--space-m);
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
 }
 
 .feature-items {

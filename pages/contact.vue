@@ -68,18 +68,4 @@ useHead({
   width: 100%;
 }
 
-.error-state {
-  text-align: center;
-  padding: var(--space-xxxl);
-
-  h1 {
-    color: var(--color-primary);
-    margin-bottom: var(--space-l);
-  }
-
-  p {
-    color: var(--color-dark);
-    opacity: 0.7;
-  }
-}
 </style>

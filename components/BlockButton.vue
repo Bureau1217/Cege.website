@@ -83,6 +83,10 @@ const getAlign = () => {
 }
 
 @media (max-width: 768px) {
+  .block-button {
+    margin: 0;
+  }
+
   .button {
     padding: var(--space-s) var(--space-l);
     font-size: 0.95rem;

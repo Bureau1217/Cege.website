@@ -108,7 +108,7 @@ const imageAlt = computed(() => {
 
     &.height-large,
     &.height-full {
-      height: 50vh;
+      height: 70vh;
     }
 
     &.height-small {
@@ -125,7 +125,7 @@ const imageAlt = computed(() => {
     &.height-medium,
     &.height-large,
     &.height-full {
-      height: 30vh;
+      height: 70vh;
     }
   }
 }

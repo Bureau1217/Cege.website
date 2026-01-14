@@ -205,20 +205,6 @@ const getTextColorClass = (color?: string) => {
 }
 
 .column-text {
-  font-size: var(--text-base-size);
-  line-height: 1.6;
-  color: var(--color-dark);
-  opacity: 0.85;
-  font-weight: var(--text-base-weight);
-
-  :deep(p) {
-    margin: 0 0 var(--space-m) 0;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
   :deep(strong) {
     font-weight: 600;
   }
@@ -234,47 +220,6 @@ const getTextColorClass = (color?: string) => {
 
     &:hover {
       opacity: 0.8;
-    }
-  }
-
-  &.color-primary {
-    color: var(--color-primary);
-  }
-
-  &.color-secondary {
-    color: var(--color-secondary);
-  }
-
-  &.color-accent {
-    color: var(--color-accent);
-  }
-
-  &.color-neutral {
-    color: var(--color-neutral);
-  }
-
-  &.color-dark {
-    color: var(--color-dark);
-  }
-}
-
-.column-list {
-  font-size: var(--text-base-size);
-  line-height: 1.8;
-  color: var(--color-dark);
-  font-weight: var(--text-base-weight);
-
-  :deep(ul),
-  :deep(ol) {
-    margin: 0;
-    padding-left: var(--space-l);
-  }
-
-  :deep(li) {
-    margin-bottom: var(--space-m);
-
-    &:last-child {
-      margin-bottom: 0;
     }
   }
 }

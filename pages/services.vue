@@ -153,21 +153,6 @@ useHead({
   -webkit-mask-position: center;
 }
 
-.error-state {
-  text-align: center;
-  padding: var(--space-xxxl);
-
-  h1 {
-    color: var(--color-primary);
-    margin-bottom: var(--space-l);
-  }
-
-  p {
-    color: var(--color-dark);
-    opacity: 0.7;
-  }
-}
-
 // Section Nos Services - image limitée à la hauteur de la colonne droite
 .v-services :deep(#nos-services + .two-columns-inner) {
   align-items: start;

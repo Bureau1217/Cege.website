@@ -102,10 +102,6 @@ const getTextColorClass = (color?: string) => {
 </script>
 
 <style scoped lang="scss">
-.section-title {
-  color: var(--color-primary);
-}
-
 .content-wrapper {
   max-width: var(--container-width);
   margin: 0 auto;
@@ -114,54 +110,13 @@ const getTextColorClass = (color?: string) => {
   gap: var(--space-xl);
 }
 
-.column-text {
-  font-size: var(--text-base-size);
-  line-height: 1.6;
-  color: var(--color-dark);
-  opacity: 0.85;
-  font-weight: var(--text-base-weight);
-
-  :deep(p) {
-    margin: 0 0 var(--space-m) 0;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+@media (max-width: 768px) {
+  .content-wrapper {
+    gap: var(--space-m);
   }
 
-  :deep(ul),
-  :deep(ol) {
-    margin: 0;
-    padding-left: 1.5rem;
-
-    li {
-      margin-bottom: var(--space-m);
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  &.color-primary {
-    color: var(--color-primary);
-  }
-
-  &.color-secondary {
-    color: var(--color-secondary);
-  }
-
-  &.color-accent {
-    color: var(--color-accent);
-  }
-
-  &.color-neutral {
-    color: var(--color-neutral);
-  }
-
-  &.color-dark {
-    color: var(--color-dark);
+  :deep(.block-testimonials) {
+    margin-block: var(--space-l);
   }
 }
-
 </style>

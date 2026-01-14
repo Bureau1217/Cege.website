@@ -311,7 +311,7 @@ const getIconStyle = (url: string) => {
   display: flex;
   flex-direction: column;
   min-height: 180px;
-  padding: var(--space-l);
+  padding: var(--space-m);
   border-radius: var(--radius-m);
   border: 2px solid var(--color-accent);
   background: transparent;
@@ -412,14 +412,22 @@ const getIconStyle = (url: string) => {
   }
 }
 
+:deep(.v-style-block.variant-primary) {
+  padding: calc(var(--space-xxxl) + var(--space-m)) var(--space-xxl);
+}
+
 @media (max-width: 968px) {
   .footer-contact-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-l);
   }
 }
 
 @media (max-width: 768px) {
+  :deep(.v-style-block.variant-primary) {
+    padding: calc(var(--space-xl) + var(--space-l)) var(--space-l);
+  }
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: var(--space-xl);
@@ -430,7 +438,7 @@ const getIconStyle = (url: string) => {
   }
 
   .footer-contact-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>
