@@ -1,5 +1,5 @@
 <template>
-  <StyleBlock variant="primary" v-if="footerData">
+  <StyleBlock variant="primary" v-if="footerData" class="footer-style-block">
       <div class="footer-content">
         <!-- Colonne gauche: Texte -->
         <div class="footer-left">
@@ -366,6 +366,8 @@ const getIconStyle = (url: string) => {
   line-height: 1.6;
   color: inherit;
   opacity: 0.8;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 
   :deep(p) {
     margin: 0 0 var(--space-s) 0;
@@ -385,6 +387,8 @@ const getIconStyle = (url: string) => {
     color: inherit;
     text-decoration: none;
     transition: opacity 0.2s ease;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 
     &:hover {
       opacity: 0.7;
@@ -412,33 +416,25 @@ const getIconStyle = (url: string) => {
   }
 }
 
-:deep(.v-style-block.variant-primary) {
-  padding: calc(var(--space-xxxl) + var(--space-m)) var(--space-xxl);
-}
-
 @media (max-width: 968px) {
   .footer-contact-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-l);
+    gap: var(--space-m);
   }
 }
 
 @media (max-width: 768px) {
-  :deep(.v-style-block.variant-primary) {
-    padding: calc(var(--space-xl) + var(--space-l)) var(--space-l);
-  }
-
   .footer-content {
     grid-template-columns: 1fr;
     gap: var(--space-xl);
   }
 
   .footer-block {
-    min-height: 160px;
+    min-height: 120px;
   }
 
   .footer-contact-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 </style>

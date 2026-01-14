@@ -47,6 +47,20 @@ withDefaults(
   }
 }
 
+.v-style-block.footer-style-block {
+  padding: calc(var(--space-xxxl) + var(--space-l)) var(--space-xxl);
+
+  @media (max-width: 768px) {
+    padding: calc(var(--space-xl) + var(--space-l)) var(--space-xl);
+  }
+}
+
+.v-style-block.contact-style-block {
+  @media (max-width: 768px) {
+    padding: calc(var(--space-xl) + var(--space-l)) var(--space-xl);
+  }
+}
+
 // Variantes de couleur
 .v-style-block.variant-white {
   background: white;

@@ -407,6 +407,11 @@ const controlePhotovoltaiqueImage = computed(() => {
   .hero-content {
     padding: var(--space-xl) var(--space-l);
   }
+
+  .hero-image-wrapper {
+    min-height: 320px;
+    height: 40vh;
+  }
 }
 
 .section {

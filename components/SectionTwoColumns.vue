@@ -233,6 +233,7 @@ const getTextColorClass = (color?: string) => {
   gap: var(--space-l);
   padding: var(--space-l);
   background: #f9f9f9;
+  border-radius: var(--radius-m);
 }
 
 .feature-item-icon {

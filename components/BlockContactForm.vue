@@ -137,8 +137,8 @@ const handleSubmit = async () => {
 
 <style scoped lang="scss">
 .block-contact-form {
-  margin-block: 0;
-  padding: var(--space-xl);
+  margin: 0;
+  padding: 0;
   background: var(--color-neutral);
   border: none;
   border-radius: var(--radius-m);

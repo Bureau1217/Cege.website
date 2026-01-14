@@ -9,6 +9,7 @@
           variant="white"
           layout="split"
           :introText="contact.formulaire_intro || ''"
+          class="contact-style-block"
         />
       </div>
     </template>

@@ -15,8 +15,8 @@
             </defs>
             <path class="schema-arrow-path" d="M20 0 L20 100" marker-end="url(#schema-arrow-head)" />
             <path class="schema-arrow-path" d="M80 0 L80 100" marker-end="url(#schema-arrow-head)" />
-            <path class="schema-arrow-path schema-arrow-path--link" d="M28 70 L50 70 L50 45" marker-end="url(#schema-arrow-head)" />
-            <path class="schema-arrow-path schema-arrow-path--link" d="M50 35 L50 15 L72 15" marker-end="url(#schema-arrow-head)" />
+            <path class="schema-arrow-path schema-arrow-path--link" d="M40 65 L50 65 L50 40" marker-end="url(#schema-arrow-head)" />
+            <path class="schema-arrow-path schema-arrow-path--link" d="M50 35 L50 10 L58 10" marker-end="url(#schema-arrow-head)" />
           </svg>
           <div class="schema-column schema-column--left">
             <div
@@ -410,7 +410,8 @@ const getGridColumns = (columns: string): number => {
   row-gap: var(--space-l);
   width: 100%;
   position: relative;
-  --schema-full-min-height: 130px;
+  --schema-card-min-height: clamp(90px, 18vw, 130px);
+  --schema-full-min-height: clamp(70px, 14vw, 100px);
   --schema-center-fr: 0.35fr;
   --schema-gutter: var(--space-s);
 }
@@ -464,8 +465,8 @@ const getGridColumns = (columns: string): number => {
   display: flex;
   align-items: stretch;
   justify-content: center;
-  min-height: 130px;
-  padding: var(--space-m) var(--space-l);
+  min-height: var(--schema-card-min-height);
+  padding: clamp(0.5rem, 1.6vw, var(--space-m)) clamp(0.75rem, 2.4vw, var(--space-l));
   border-radius: var(--radius-m);
   background: #f9f9f9;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -474,8 +475,8 @@ const getGridColumns = (columns: string): number => {
 }
 
 .schema-note {
-  min-height: 60px;
-  padding: var(--space-s) var(--space-l);
+  min-height: clamp(44px, 10vw, 60px);
+  padding: clamp(0.35rem, 1.2vw, var(--space-s)) clamp(0.6rem, 2.2vw, var(--space-l));
   border-radius: var(--radius-m);
   background: var(--color-primary);
   border: 1px solid transparent;
@@ -491,16 +492,18 @@ const getGridColumns = (columns: string): number => {
   max-width: 220px;
 }
 
-.schema-note--left {
+.schema-note.schema-note--left {
   grid-column: 1 / 2;
   justify-self: center;
   width: 70%;
   max-width: 320px;
-  margin-top: var(--space-xxxl);
+  margin-top: 0;
+  min-height: clamp(48px, 9vw, 70px);
+  padding: var(--space-xs) var(--space-s);
 }
 
 .schema-note-text {
-  font-size: 1.15rem;
+  font-size: clamp(0.85rem, 2.4vw, 1.15rem);
   font-weight: 800;
   color: #fff;
   text-align: center;
@@ -508,7 +511,7 @@ const getGridColumns = (columns: string): number => {
 
 .schema-card-inner {
   display: flex;
-  gap: var(--space-m);
+  gap: clamp(0.4rem, 1.4vw, var(--space-m));
   align-items: center;
   width: 100%;
 }
@@ -520,6 +523,7 @@ const getGridColumns = (columns: string): number => {
 .schema-card--full {
   grid-column: 1 / -1;
   min-height: var(--schema-full-min-height);
+  padding: clamp(0.35rem, 1.2vw, var(--space-s)) clamp(0.6rem, 2.2vw, var(--space-l));
   background: var(--color-primary);
   border-color: transparent;
   margin-top: 0;
@@ -572,7 +576,7 @@ const getGridColumns = (columns: string): number => {
 }
 
 .schema-number {
-  font-size: 3.2rem;
+  font-size: clamp(1.6rem, 4.8vw, 3.2rem);
   font-weight: 800;
   color: var(--color-primary);
   line-height: 1;
@@ -580,8 +584,8 @@ const getGridColumns = (columns: string): number => {
 
 .schema-icon {
   display: inline-block;
-  width: 48px;
-  height: 48px;
+  width: clamp(28px, 6vw, 48px);
+  height: clamp(28px, 6vw, 48px);
   flex-shrink: 0;
   background-color: var(--color-accent);
   mask-size: contain;
@@ -602,7 +606,7 @@ const getGridColumns = (columns: string): number => {
 
 .schema-title {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: clamp(0.95rem, 2.8vw, 1.35rem);
   font-weight: 800;
   color: var(--color-primary);
   line-height: 1.3;
@@ -612,7 +616,7 @@ const getGridColumns = (columns: string): number => {
   color: var(--color-dark);
   opacity: 0.85;
   line-height: 1.7;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 2.6vw, 1.2rem);
 
   :deep(p) {
     margin: 0;
@@ -715,21 +719,27 @@ const getGridColumns = (columns: string): number => {
   }
 
   .two-columns-inner {
-    grid-template-columns: 1fr;
-    gap: var(--space-l);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-m);
   }
 
   .schema-grid {
-    grid-template-columns: 1fr;
-    --schema-full-min-height: 120px;
-    --schema-center-fr: 1fr;
-    column-gap: 0;
+    grid-template-columns: minmax(0, 1fr) var(--schema-center-fr) minmax(0, 1fr);
+    --schema-center-fr: 0.25fr;
+    --schema-gutter: var(--space-xs);
+    row-gap: var(--space-s);
   }
 
-  .schema-column--left,
-  .schema-column--center,
+  .schema-column--left {
+    grid-column: 1 / 2;
+  }
+
+  .schema-column--center {
+    grid-column: 2 / 3;
+  }
+
   .schema-column--right {
-    grid-column: 1 / -1;
+    grid-column: 3 / 4;
   }
 
   .schema-card-inner {
@@ -764,21 +774,20 @@ const getGridColumns = (columns: string): number => {
     margin-top: var(--space-l);
   }
 
-  .schema-arrow {
-    display: none;
-  }
 
   .schema-note--center {
-    margin-block: var(--space-l);
-    width: 70%;
-    max-width: 240px;
+    margin-block: var(--space-m);
+    width: 100%;
+    max-width: clamp(140px, 45vw, 200px);
   }
 
-  .schema-note--left {
-    grid-column: 1 / -1;
-    margin-top: var(--space-xxl);
-    width: 85%;
-    max-width: 280px;
+  .schema-note.schema-note--left {
+    grid-column: 1 / 2;
+    margin-block: var(--space-m);
+    width: 80%;
+    max-width: clamp(80px, 30vw,160px);
+    min-height: clamp(40px, 12vw, 56px);
+    padding: var(--space-xxs) var(--space-xs);
   }
 }
 </style>

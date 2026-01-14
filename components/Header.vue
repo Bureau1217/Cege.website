@@ -22,17 +22,80 @@
       </div>
 
       <!-- Navigation à droite -->
-      <nav class="header-nav">
+      <button
+        class="header-burger"
+        type="button"
+        :aria-expanded="isMenuOpen ? 'true' : 'false'"
+        aria-controls="header-menu"
+        :aria-label="isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
+        :class="{ 'is-open': isMenuOpen }"
+        @click="isMenuOpen = !isMenuOpen"
+      >
+        <span class="sr-only">Menu</span>
+        <span class="burger-line" />
+        <span class="burger-line" />
+        <span class="burger-line" />
+      </button>
+
+      <nav class="header-nav" :class="{ 'is-open': isMenuOpen }" id="header-menu">
         <ul class="nav-list">
           <li v-for="item in navItems" :key="item.to" class="nav-item">
             <NuxtLink
               :to="item.to"
               class="nav-link"
+              @click="isMenuOpen = false"
             >
               {{ item.label }}
             </NuxtLink>
           </li>
         </ul>
+        <div v-if="footerData" class="mobile-menu-footer">
+          <div class="mobile-footer-contact">
+            <div class="mobile-footer-item" v-if="footerData.adresse">
+              <span
+                v-if="footerIcons.adresse?.url"
+                class="mobile-footer-icon"
+                :style="getIconStyle(footerIcons.adresse.url)"
+                aria-hidden="true"
+              />
+              <div class="mobile-footer-text" v-html="footerData.adresse" />
+            </div>
+
+            <div class="mobile-footer-item" v-if="footerData.telephone">
+              <span
+                v-if="footerIcons.telephone?.url"
+                class="mobile-footer-icon"
+                :style="getIconStyle(footerIcons.telephone.url)"
+                aria-hidden="true"
+              />
+              <div class="mobile-footer-text">
+                <a :href="`tel:${footerData.telephone}`">{{ footerData.telephone }}</a>
+              </div>
+            </div>
+
+            <div class="mobile-footer-item" v-if="footerData.email">
+              <span
+                v-if="footerIcons.email?.url"
+                class="mobile-footer-icon"
+                :style="getIconStyle(footerIcons.email.url)"
+                aria-hidden="true"
+              />
+              <div class="mobile-footer-text">
+                <a :href="`mailto:${footerData.email}`">{{ footerData.email }}</a>
+              </div>
+            </div>
+
+            <div class="mobile-footer-item" v-if="footerData.horaires">
+              <span
+                v-if="footerIcons.horaires?.url"
+                class="mobile-footer-icon"
+                :style="getIconStyle(footerIcons.horaires.url)"
+                aria-hidden="true"
+              />
+              <div class="mobile-footer-text" v-html="footerData.horaires" />
+            </div>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -61,19 +124,60 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
             }
           }
         }
+      },
+      footer: {
+        query: "site.find('footer')",
+        select: {
+          adresse: 'page.adresse.value',
+          telephone: 'page.telephone.value',
+          email: 'page.email.value',
+          horaires: 'page.horaires.value',
+          icone_adresse: 'page.icone_adresse.value',
+          icone_telephone: 'page.icone_telephone.value',
+          icone_email: 'page.icone_email.value',
+          icone_horaires: 'page.icone_horaires.value',
+          files: {
+            query: 'page.files',
+            select: {
+              uuid: 'file.uuid',
+              url: 'file.url',
+              alt: 'file.alt.value'
+            }
+          }
+        }
       }
     }
   }
 })
 
 const homeFiles = computed(() => homeData.value?.files || [])
-const { getCmsImageUrl } = useCmsImage(homeFiles)
+const footerData = computed(() => {
+  if (data.value && data.value.status === 'ok') {
+    return data.value.result.footer
+  }
+  return null
+})
+const footerFiles = computed(() => footerData.value?.files || [])
+const allFiles = computed(() => [...homeFiles.value, ...footerFiles.value])
+const { getCmsImageUrl } = useCmsImage(allFiles)
 
 const homeData = computed(() => {
   if (data.value && data.value.status === 'ok') {
     return data.value.result.home
   }
   return null
+})
+
+const footerFilesByUuid = computed(() => {
+  const files = footerData.value?.files || []
+  const map: Record<string, any> = {}
+  files.forEach((file: any) => {
+    if (file?.uuid) {
+      map[file.uuid] = file
+      map[`file://${file.uuid}`] = file
+    }
+  })
+  return map
 })
 
 const homeFilesByUuid = computed(() => {
@@ -116,6 +220,38 @@ const resolveLogo = (fieldValue: any) => {
   }
 
   return { url: normalized, alt: '', extension: undefined }
+}
+
+const resolveFooterIcon = (fieldValue: any) => {
+  if (!fieldValue) return null
+  if (Array.isArray(fieldValue)) {
+    return resolveFooterIcon(fieldValue[0])
+  }
+  if (typeof fieldValue === 'object') {
+    if (fieldValue.url) {
+      return { url: fieldValue.url, alt: fieldValue.alt || '' }
+    }
+    if (fieldValue.uuid) {
+      fieldValue = `file://${fieldValue.uuid}`
+    }
+  }
+  if (typeof fieldValue !== 'string') return null
+
+  const normalized = extractFileRef(fieldValue)
+  const file = footerFilesByUuid.value[normalized] || footerFilesByUuid.value[normalized.replace('file://', '')]
+  if (file) {
+    return { url: file.url, alt: file.alt || '' }
+  }
+
+  return { url: normalized, alt: '' }
+}
+
+const getIconStyle = (url: string) => {
+  const resolved = getCmsImageUrl(url)
+  return {
+    maskImage: `url(${resolved})`,
+    WebkitMaskImage: `url(${resolved})`
+  }
 }
 
 const logoImage = computed(() => resolveLogo(homeData.value?.menu_logo))
@@ -175,6 +311,18 @@ const navItems = [
   { to: '/services', label: 'Nos Services' },
   { to: '/contact', label: 'Nous Contacter' }
 ]
+
+const isMenuOpen = ref(false)
+
+const footerIcons = computed(() => {
+  const current = footerData.value
+  return {
+    adresse: resolveFooterIcon(current?.icone_adresse),
+    telephone: resolveFooterIcon(current?.icone_telephone),
+    email: resolveFooterIcon(current?.icone_email),
+    horaires: resolveFooterIcon(current?.icone_horaires)
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -234,6 +382,101 @@ const navItems = [
   flex: 1;
   display: flex;
   justify-content: flex-end;
+}
+
+.header-burger {
+  display: none;
+  border: 0;
+  background: transparent;
+  padding: var(--space-xs);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 200;
+}
+
+.burger-line {
+  display: block;
+  width: 26px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.header-burger.is-open .burger-line {
+  background: #fff;
+}
+
+.header-burger.is-open .burger-line:nth-child(2) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.header-burger.is-open .burger-line:nth-child(3) {
+  opacity: 0;
+}
+
+.header-burger.is-open .burger-line:nth-child(4) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mobile-menu-footer {
+  display: none;
+}
+
+.mobile-footer-contact {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.mobile-footer-item {
+  display: flex;
+  gap: var(--space-s);
+  align-items: flex-start;
+  padding: var(--space-m);
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.mobile-footer-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  background-color: var(--color-accent);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.mobile-footer-text {
+  font-size: var(--text-small-size);
+  line-height: 1.5;
+  color: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .nav-list {
@@ -296,17 +539,58 @@ const navItems = [
 @media (max-width: 768px) {
   .header-inner {
     padding: var(--space-m) var(--page-gutter-mobile);
+    flex-wrap: wrap;
+  }
+
+  .header-burger {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .header-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--color-primary);
+    padding: var(--space-xxl) var(--space-xl) var(--space-xl);
+    z-index: 150;
+    align-items: flex-start;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .header-nav.is-open {
+    display: flex;
   }
 
   .nav-list {
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--space-m);
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    width: 100%;
   }
 
   .nav-link {
-    font-size: 1rem;
-    padding: var(--space-xs) var(--space-s);
+    font-size: 2.5rem;
+    padding: var(--space-s) 0;
+    color: white;
+
+    &::after {
+      background: white;
+    }
+  }
+
+  .mobile-menu-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    margin-top: auto;
+    padding-top: var(--space-xl);
+    width: 100%;
   }
 
   .logo {
@@ -325,23 +609,20 @@ const navItems = [
 @media (max-width: 480px) {
   .header-inner {
     padding: var(--space-m) var(--space-s);
-    flex-direction: column;
-    gap: var(--space-m);
-  }
-
-  .header-nav {
-    width: 100%;
-    justify-content: center;
   }
 
   .nav-list {
-    gap: var(--space-s);
-    justify-content: center;
+    gap: var(--space-xs);
   }
 
   .nav-link {
-    font-size: 0.95rem;
-    padding: var(--space-xs) var(--space-s);
+    font-size: 2rem;
+    padding: var(--space-s) 0;
+    color: white;
+
+    &::after {
+      background: white;
+    }
   }
 
   .logo-image {
