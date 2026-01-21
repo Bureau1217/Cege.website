@@ -4,7 +4,7 @@
       <!-- Formulaire Section -->
       <div id="formulaire">
         <SectionFormulaire
-          :titre="contact.formulaire_titre || '<h2>Formulaire</h2>'"
+          :titre="formatSectionTitle(contact.formulaire_titre, 'Formulaire')"
           :blocks="contact.formulaire || []"
           variant="white"
           layout="split"
@@ -76,7 +76,7 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
             twitterCardType: 'page.twitterCardType.value',
             twitterAuthor: 'page.twitterAuthor.value'
           },
-          formulaire_titre: 'page.formulaire_titre.toBlocks.toHtml',
+          formulaire_titre: 'page.formulaire_titre.value',
           formulaire_intro: 'page.formulaire_intro.toBlocks.toHtml',
           formulaire: 'page.formulaire.toBlocks.toArray'
         }
@@ -91,6 +91,21 @@ const contactSeo = computed(() => (data.value?.result?.contact as any)?.seo ?? n
 const seoFiles = computed(() => [
   ...(siteSeo.value?.files || [])
 ])
+
+const escapeHtml = (value: string) => {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+const formatSectionTitle = (value?: string, fallback?: string) => {
+  const text = (value || '').trim() || (fallback || '').trim()
+  if (!text) return ''
+  return `<h4>${escapeHtml(text)}</h4>`
+}
 
 useSeo({
   page: contactSeo,

@@ -110,18 +110,15 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
   body: {
     query: 'site',
     select: {
-      home: {
-        query: "site.find('home')",
-        select: {
-          menu_logo: 'page.menu_logo.value',
-          files: {
-            query: 'page.files',
-            select: {
-              uuid: 'file.uuid',
-              url: 'file.url',
-              alt: 'file.alt.value',
-              extension: 'file.extension'
-            }
+      site: {
+        menu_logo: 'site.menu_logo.value',
+        files: {
+          query: 'site.files',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value',
+            extension: 'file.extension'
           }
         }
       },
@@ -150,7 +147,7 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
   }
 })
 
-const homeFiles = computed(() => homeData.value?.files || [])
+const siteFiles = computed(() => siteData.value?.files || [])
 const footerData = computed(() => {
   if (data.value && data.value.status === 'ok') {
     return data.value.result.footer
@@ -158,12 +155,12 @@ const footerData = computed(() => {
   return null
 })
 const footerFiles = computed(() => footerData.value?.files || [])
-const allFiles = computed(() => [...homeFiles.value, ...footerFiles.value])
+const allFiles = computed(() => [...siteFiles.value, ...footerFiles.value])
 const { getCmsImageUrl } = useCmsImage(allFiles)
 
-const homeData = computed(() => {
+const siteData = computed(() => {
   if (data.value && data.value.status === 'ok') {
-    return data.value.result.home
+    return data.value.result.site
   }
   return null
 })
@@ -180,8 +177,8 @@ const footerFilesByUuid = computed(() => {
   return map
 })
 
-const homeFilesByUuid = computed(() => {
-  const files = homeData.value?.files || []
+const siteFilesByUuid = computed(() => {
+  const files = siteData.value?.files || []
   const map: Record<string, any> = {}
   files.forEach((file: any) => {
     if (file?.uuid) {
@@ -214,7 +211,7 @@ const resolveLogo = (fieldValue: any) => {
   if (typeof fieldValue !== 'string') return null
 
   const normalized = extractFileRef(fieldValue)
-  const file = homeFilesByUuid.value[normalized] || homeFilesByUuid.value[normalized.replace('file://', '')]
+  const file = siteFilesByUuid.value[normalized] || siteFilesByUuid.value[normalized.replace('file://', '')]
   if (file) {
     return { url: file.url, alt: file.alt || '', extension: file.extension }
   }
@@ -254,7 +251,7 @@ const getIconStyle = (url: string) => {
   }
 }
 
-const logoImage = computed(() => resolveLogo(homeData.value?.menu_logo))
+const logoImage = computed(() => resolveLogo(siteData.value?.menu_logo))
 
 const logoSvg = ref<string | null>(null)
 

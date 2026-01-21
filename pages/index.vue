@@ -11,7 +11,6 @@
         <div class="hero-inner">
           <div class="hero-content">
             <div v-if="data.result.home.hero_titre" class="hero-title" v-html="data.result.home.hero_titre" />
-            <p v-if="data.result.home.hero_texte" class="hero-text">{{ data.result.home.hero_texte }}</p>
           </div>
           <div v-if="heroImage" class="hero-image-wrapper">
             <img :src="heroImage.url" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
@@ -22,7 +21,7 @@
       <!-- Notre Entreprise Section -->
       <section v-if="data.result.home.notreEntreprise_colonne_gauche || data.result.home.notreEntreprise_colonne_droite" :id="`notre-entreprise`" class="section-with-anchor">
         <SectionTwoColumns
-          :titre="data.result.home.notreEntreprise_titre || '<h2>Notre Entreprise</h2>'"
+          :titre="formatSectionTitle(data.result.home.notreEntreprise_titre, 'Notre Entreprise')"
           :colonneGauche="data.result.home.notreEntreprise_colonne_gauche || []"
           :colonneDroite="data.result.home.notreEntreprise_colonne_droite || []"
           :images="data.result.home.images || []"
@@ -33,7 +32,7 @@
       <!-- Nos Services Section -->
       <section v-if="data.result.services" id="nos-services" class="services-section">
         <div class="services-inner">
-          <div class="services-title" v-html="data.result.home.nosServices_titre || '<h2>Nos Services</h2>'" />
+          <div class="services-title" v-html="formatSectionTitle(data.result.home.nosServices_titre, 'Nos Services')" />
           <div class="services-cards">
             <a v-if="(data.result.services as any).nosServices_titre" href="/services#nos-services" class="service-card">
               <div class="service-card-image" v-if="nosServicesImage">
@@ -42,7 +41,7 @@
               <div
                 class="service-card-title"
                 :class="[`card-title-${serviceCardTitleSize}`, `card-color-${serviceCardTitleColor}`]"
-                v-html="(data.result.services as any).nosServices_titre"
+                v-html="formatCardTitle((data.result.services as any).nosServices_titre)"
               />
             </a>
             <a v-if="(data.result.services as any).controleBornes_titre" href="/services#controle-bornes" class="service-card">
@@ -52,7 +51,7 @@
               <div
                 class="service-card-title"
                 :class="[`card-title-${serviceCardTitleSize}`, `card-color-${serviceCardTitleColor}`]"
-                v-html="(data.result.services as any).controleBornes_titre"
+                v-html="formatCardTitle((data.result.services as any).controleBornes_titre)"
               />
             </a>
             <a v-if="(data.result.services as any).controlePhotovoltaique_titre" href="/services#controle-photovoltaique" class="service-card">
@@ -62,7 +61,7 @@
               <div
                 class="service-card-title"
                 :class="[`card-title-${serviceCardTitleSize}`, `card-color-${serviceCardTitleColor}`]"
-                v-html="(data.result.services as any).controlePhotovoltaique_titre"
+                v-html="formatCardTitle((data.result.services as any).controlePhotovoltaique_titre)"
               />
             </a>
           </div>
@@ -72,7 +71,7 @@
       <!-- Avis Section -->
       <section v-if="data.result.home.avis && data.result.home.avis.length > 0" :id="`avis`" class="section-with-anchor">
         <SectionAvis
-          :titre="data.result.home.avis_titre || '<h2>Avis</h2>'"
+          :titre="formatSectionTitle(data.result.home.avis_titre, 'Avis')"
           :blocks="data.result.home.avis"
           :files="data.result.home.images || []"
         />
@@ -151,7 +150,6 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           title: true,
           slug: true,
           hero_titre: 'page.hero_titre.toBlocks.toHtml',
-          hero_texte: 'page.hero_texte.value',
           hero_image: 'page.hero_image.value',
           seo: {
             metaTitle: 'page.metaTitle.value',
@@ -165,14 +163,14 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
             twitterCardType: 'page.twitterCardType.value',
             twitterAuthor: 'page.twitterAuthor.value'
           },
-          notreEntreprise_titre: 'page.notreEntreprise_titre.toBlocks.toHtml',
+          notreEntreprise_titre: 'page.notreEntreprise_titre.value',
           notreEntreprise_colonne_gauche: 'page.notreEntreprise_colonne_gauche.toBlocks.toArray',
           notreEntreprise_colonne_droite: 'page.notreEntreprise_colonne_droite.toBlocks.toArray',
-          nosServices_titre: 'page.nosServices_titre.toBlocks.toHtml',
+          nosServices_titre: 'page.nosServices_titre.value',
           nosServices_cartes_taille: 'page.nosServices_cartes_taille.value',
           nosServices_cartes_couleur: 'page.nosServices_cartes_couleur.value',
           image: 'page.content.image.toBlocks.toArray',
-          avis_titre: 'page.avis_titre.toBlocks.toHtml',
+          avis_titre: 'page.avis_titre.value',
           avis: 'page.avis.toBlocks.toArray',
           images: {
             query: 'page.files',
@@ -190,13 +188,13 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
       services: {
         query: "site.find('services')",
         select: {
-          nosServices_titre: 'page.nosServices_titre.toBlocks.toHtml',
+          nosServices_titre: 'page.nosServices_titre.value',
           nosServices_colonne_gauche: 'page.nosServices_colonne_gauche.toBlocks.toArray',
           nosServices_colonne_droite: 'page.nosServices_colonne_droite.toBlocks.toArray',
-          controleBornes_titre: 'page.controleBornes_titre.toBlocks.toHtml',
+          controleBornes_titre: 'page.controleBornes_titre.value',
           controleBornes_colonne_gauche: 'page.controleBornes_colonne_gauche.toBlocks.toArray',
           controleBornes_colonne_droite: 'page.controleBornes_colonne_droite.toBlocks.toArray',
-          controlePhotovoltaique_titre: 'page.controlePhotovoltaique_titre.toBlocks.toHtml',
+          controlePhotovoltaique_titre: 'page.controlePhotovoltaique_titre.value',
           controlePhotovoltaique_colonne_gauche: 'page.controlePhotovoltaique_colonne_gauche.toBlocks.toArray',
           controlePhotovoltaique_colonne_droite: 'page.controlePhotovoltaique_colonne_droite.toBlocks.toArray',
           images: {
@@ -224,6 +222,27 @@ const getImageBlockComponent = (type: string) => {
 const stripHtml = (value?: string) => {
   if (!value) return ''
   return value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+const escapeHtml = (value: string) => {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+const formatSectionTitle = (value?: string, fallback?: string) => {
+  const text = (value || '').trim() || (fallback || '').trim()
+  if (!text) return ''
+  return `<h4>${escapeHtml(text)}</h4>`
+}
+
+const formatCardTitle = (value?: string) => {
+  const text = (value || '').trim()
+  if (!text) return ''
+  return `<h3>${escapeHtml(text)}</h3>`
 }
 
 const normalizeFileRef = (value: any) => {
@@ -414,14 +433,6 @@ const controlePhotovoltaiqueImage = computed(() => {
 
 .hero-title :deep(.color-dark) {
   color: var(--color-dark);
-}
-
-.hero-text {
-  color: white;
-  font-size: clamp(1.5rem, 1.5vw, 1.15rem);
-  line-height: 1.7;
-  opacity: 0.9;
-  margin: 0;
 }
 
 .hero-image-wrapper {

@@ -4,7 +4,6 @@
         <!-- Colonne gauche: Texte -->
         <div class="footer-left">
           <div v-if="footerData.titre" class="footer-title" v-html="footerData.titre" />
-          <p v-if="footerData.texte" class="footer-description">{{ footerData.texte }}</p>
         </div>
 
         <!-- Colonne droite: Infos de contact -->
@@ -98,7 +97,6 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
         query: "site.find('footer')",
         select: {
           titre: 'page.titre.toBlocks.toHtml',
-          texte: 'page.texte.value',
           adresse: 'page.adresse.value',
           telephone: 'page.telephone.value',
           email: 'page.email.value',
@@ -252,15 +250,6 @@ const getIconStyle = (url: string) => {
   font-size: var(--text-base-size);
   font-weight: var(--text-base-weight);
   line-height: 1.6;
-}
-
-.footer-description {
-  font-size: var(--text-base-size);
-  line-height: 1.8;
-  color: white;
-  opacity: 0.9;
-  font-weight: var(--text-base-weight);
-  margin: 0;
 }
 
 .footer-menu {

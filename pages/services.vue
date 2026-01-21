@@ -4,7 +4,7 @@
       <!-- Nos Services -->
       <SectionTwoColumns
         sectionId="nos-services"
-        :titre="services.nosServices_titre || '<h2>Nos Services</h2>'"
+        :titre="formatSectionTitle(services.nosServices_titre, 'Nos Services')"
         :colonneGauche="services.nosServices_colonne_gauche || []"
         :colonneDroite="services.nosServices_colonne_droite || []"
         :images="services.images || []"
@@ -13,7 +13,7 @@
       <!-- Notre Démarche -->
       <SectionNotreDemarche
         sectionId="notre-demarche"
-        :titre="services.notreDemarche_titre || '<h2>Notre Démarche</h2>'"
+        :titre="formatSectionTitle(services.notreDemarche_titre, 'Notre Démarche')"
         :colonneGauche="services.notreDemarche || []"
         :colonneDroite="[]"
         :images="services.images || []"
@@ -24,7 +24,7 @@
       <SectionTwoColumns
         variant="white"
         sectionId="controle-bornes"
-        :titre="services.controleBornes_titre || '<h2>Contrôle des bornes de recharge</h2>'"
+        :titre="formatSectionTitle(services.controleBornes_titre, 'Contrôle des bornes de recharge')"
         :colonneGauche="services.controleBornes_colonne_gauche || []"
         :colonneDroite="services.controleBornes_colonne_droite || []"
         :images="services.images || []"
@@ -34,7 +34,7 @@
       <SectionTwoColumns
         variant="white"
         sectionId="controle-photovoltaique"
-        :titre="services.controlePhotovoltaique_titre || '<h2>Contrôles photovoltaïques</h2>'"
+        :titre="formatSectionTitle(services.controlePhotovoltaique_titre, 'Contrôles photovoltaïques')"
         :colonneGauche="services.controlePhotovoltaique_colonne_gauche || []"
         :colonneDroite="services.controlePhotovoltaique_colonne_droite || []"
         :images="services.images || []"
@@ -106,18 +106,18 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
             twitterAuthor: 'page.twitterAuthor.value'
           },
 
-          nosServices_titre: 'page.nosServices_titre.toBlocks.toHtml',
+          nosServices_titre: 'page.nosServices_titre.value',
           nosServices_colonne_gauche: 'page.nosServices_colonne_gauche.toBlocks.toArray',
           nosServices_colonne_droite: 'page.nosServices_colonne_droite.toBlocks.toArray',
 
-          notreDemarche_titre: 'page.notreDemarche_titre.toBlocks.toHtml',
+          notreDemarche_titre: 'page.notreDemarche_titre.value',
           notreDemarche: 'page.notreDemarche.toBlocks.toArray',
 
-          controleBornes_titre: 'page.controleBornes_titre.toBlocks.toHtml',
+          controleBornes_titre: 'page.controleBornes_titre.value',
           controleBornes_colonne_gauche: 'page.controleBornes_colonne_gauche.toBlocks.toArray',
           controleBornes_colonne_droite: 'page.controleBornes_colonne_droite.toBlocks.toArray',
 
-          controlePhotovoltaique_titre: 'page.controlePhotovoltaique_titre.toBlocks.toHtml',
+          controlePhotovoltaique_titre: 'page.controlePhotovoltaique_titre.value',
           controlePhotovoltaique_colonne_gauche: 'page.controlePhotovoltaique_colonne_gauche.toBlocks.toArray',
           controlePhotovoltaique_colonne_droite: 'page.controlePhotovoltaique_colonne_droite.toBlocks.toArray',
 
@@ -147,6 +147,21 @@ const seoFiles = computed(() => [
   ...((data.value?.result?.services as any)?.images || []),
   ...(siteSeo.value?.files || [])
 ])
+
+const escapeHtml = (value: string) => {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+const formatSectionTitle = (value?: string, fallback?: string) => {
+  const text = (value || '').trim() || (fallback || '').trim()
+  if (!text) return ''
+  return `<h4>${escapeHtml(text)}</h4>`
+}
 
 useSeo({
   page: servicesSeo,
