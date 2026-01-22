@@ -7,7 +7,15 @@ export const useSiteSettings = async () => {
     body: {
       query: 'site',
       select: {
-        menu_logo: 'site.menu_logo.value',
+        menu_logo: {
+          query: 'site.menu_logo.toFile',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value',
+            extension: 'file.extension'
+          }
+        },
         files: {
           query: 'site.files',
           select: {

@@ -154,6 +154,12 @@ const resolveLogo = (fieldValue: any) => {
     return { url: file.url, alt: file.alt || '', extension: file.extension }
   }
 
+  // Si le fichier n'est pas trouvé, utiliser le proxy API
+  const uuidMatch = normalized.match(/file:\/\/([a-z0-9]+)/i)
+  if (uuidMatch) {
+    return { url: `/api/file/${uuidMatch[1]}`, alt: '', extension: 'svg' }
+  }
+
   return { url: normalized, alt: '', extension: undefined }
 }
 
