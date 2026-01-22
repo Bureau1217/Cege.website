@@ -177,7 +177,7 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           nosServices_titre_taille: 'page.nosServices_titre_taille.value',
           nosServices_cartes_taille: 'page.nosServices_cartes_taille.value',
           nosServices_cartes_couleur: 'page.nosServices_cartes_couleur.value',
-          image: 'page.content.image.toBlocks.toArray',
+          image: 'page.image.toBlocks.toArray',
           avis_titre: 'page.avis_titre.value',
           avis_titre_couleur: 'page.avis_titre_couleur.value',
           avis_titre_taille: 'page.avis_titre_taille.value',

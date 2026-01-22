@@ -1,7 +1,7 @@
 import { watch } from 'vue'
 
-export const useSiteSettings = () => {
-  const { data: siteData } = useFetch<any>('/api/CMS_KQLRequest', {
+export const useSiteSettings = async () => {
+  const { data: siteData } = await useFetch<any>('/api/CMS_KQLRequest', {
     key: 'site-settings',
     method: 'POST',
     body: {

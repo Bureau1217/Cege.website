@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 // Fetch and apply site colors from CMS
-useSiteSettings()
+await useSiteSettings()
 </script>
 
 <style scoped>

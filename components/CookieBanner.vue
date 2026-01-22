@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-const { siteData } = useSiteSettings()
+const { siteData } = await useSiteSettings()
 const consent = useCookie<string | null>('cege_cookie_consent', {
   sameSite: 'lax',
   maxAge: 60 * 60 * 24 * 365

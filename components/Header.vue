@@ -52,7 +52,7 @@ import { useCmsImage } from '@/composables/useCmsImage'
 import MobileMenu from '@/components/MobileMenu.vue'
 import MobileMenuToggle from '@/components/MobileMenuToggle.vue'
 
-const { siteData: siteSettings } = useSiteSettings()
+const { siteData: siteSettings } = await useSiteSettings()
 
 const { data: footerResponse } = await useFetch<any>('/api/CMS_KQLRequest', {
   method: 'POST',
@@ -218,7 +218,7 @@ const applyLogoColors = (svg: string) => {
 }
 
 // Charger le SVG côté serveur pour éviter le délai
-const getLogoUrl = () => {
+const getLogoDirectUrl = () => {
   const logo = logoImage.value
   if (!logo?.url) return null
   const extension = logo.extension || ''
@@ -226,13 +226,15 @@ const getLogoUrl = () => {
   const looksSvg = extension.toLowerCase() === 'svg' || url.toLowerCase().includes('.svg')
   const shouldProbe = looksSvg || url.startsWith('file://')
   if (!shouldProbe) return null
-  return getCmsImageUrl(url)
+  // Retourner l'URL directe du CMS (pas le proxy) pour le fetch SSR
+  return url
 }
 
 const { data: logoSvg } = await useAsyncData('logo-svg', async () => {
-  const url = getLogoUrl()
+  const url = getLogoDirectUrl()
   if (!url) return null
   try {
+    // Fetch directement depuis le CMS (fonctionne côté serveur)
     const response = await $fetch<string>(url, { responseType: 'text' })
     if (typeof response === 'string' && response.includes('<svg')) {
       return applyLogoColors(response)
