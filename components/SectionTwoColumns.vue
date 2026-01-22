@@ -30,7 +30,7 @@
             ></div>
             <img
               v-else-if="block.type === 'image' && block.content?.image && getImageFromUuid(block.content.image)"
-              :src="getImageFromUuid(block.content.image)?.reg?.url"
+              :src="getImageUrl(block.content.image)"
               :alt="block.content?.alt || getImageFromUuid(block.content.image)?.alt || ''"
               class="column-image"
             />
@@ -79,7 +79,7 @@
             ></div>
             <img
               v-else-if="block.type === 'image' && block.content?.image && getImageFromUuid(block.content.image)"
-              :src="getImageFromUuid(block.content.image)?.reg?.url"
+              :src="getImageUrl(block.content.image)"
               :alt="block.content?.alt || getImageFromUuid(block.content.image)?.alt || ''"
               class="column-image"
             />
@@ -149,6 +149,14 @@ const getImageFromUuid = (uuid: string | string[]) => {
     return img || null
   }
   return null
+}
+
+// Get proxied image URL from UUID
+const getImageUrl = (uuid: string | string[]) => {
+  const img = getImageFromUuid(uuid)
+  if (!img) return ''
+  const url = img.reg?.url || img.url
+  return url ? getCmsImageUrl(url) : ''
 }
 
 const resolveIconRef = (value: unknown) => {

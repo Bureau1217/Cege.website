@@ -13,7 +13,7 @@
             <div v-if="data.result.home.hero_titre" class="hero-title" v-html="data.result.home.hero_titre" />
           </div>
           <div v-if="heroImage" class="hero-image-wrapper">
-            <img :src="heroImage.url" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
+            <img :src="proxyImageUrl(heroImage.url)" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
           </div>
         </div>
       </section>
@@ -36,7 +36,7 @@
           <div class="services-cards">
             <a v-if="(data.result.services as any).nosServices_titre" href="/services#nos-services" class="service-card">
               <div class="service-card-image" v-if="nosServicesImage">
-                <img :src="nosServicesImage" :alt="stripHtml((data.result.services as any).nosServices_titre)" />
+                <img :src="proxyImageUrl(nosServicesImage)" :alt="stripHtml((data.result.services as any).nosServices_titre)" />
               </div>
               <div
                 class="service-card-title"
@@ -46,7 +46,7 @@
             </a>
             <a v-if="(data.result.services as any).controleBornes_titre" href="/services#controle-bornes" class="service-card">
               <div class="service-card-image" v-if="controleBornesImage">
-                <img :src="controleBornesImage" :alt="stripHtml((data.result.services as any).controleBornes_titre)" />
+                <img :src="proxyImageUrl(controleBornesImage)" :alt="stripHtml((data.result.services as any).controleBornes_titre)" />
               </div>
               <div
                 class="service-card-title"
@@ -56,7 +56,7 @@
             </a>
             <a v-if="(data.result.services as any).controlePhotovoltaique_titre" href="/services#controle-photovoltaique" class="service-card">
               <div class="service-card-image" v-if="controlePhotovoltaiqueImage">
-                <img :src="controlePhotovoltaiqueImage" :alt="stripHtml((data.result.services as any).controlePhotovoltaique_titre)" />
+                <img :src="proxyImageUrl(controlePhotovoltaiqueImage)" :alt="stripHtml((data.result.services as any).controlePhotovoltaique_titre)" />
               </div>
               <div
                 class="service-card-title"
