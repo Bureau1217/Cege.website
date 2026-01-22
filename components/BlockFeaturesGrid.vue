@@ -10,13 +10,17 @@
       v-for="(item, index) in block.content.items"
       :key="index"
       class="grid-item"
+      :style="getGridItemStyle(item)"
     >
       <div v-if="item.shownumber === 'true' && item.number" class="item-number">
         {{ item.number }}
       </div>
-      <div v-if="item.icon && item.icon.length > 0" class="item-icon">
-        <img :src="getFileUrl(item.icon)" :alt="item.title || ''" />
-      </div>
+      <span
+        v-if="resolveFileRef(item.icon)"
+        class="item-icon"
+        :style="getIconStyle(item.icon)"
+        aria-hidden="true"
+      />
       <h4 v-if="item.title" class="item-title">{{ item.title }}</h4>
       <p v-if="item.text" class="item-text">{{ item.text }}</p>
     </div>
@@ -53,10 +57,39 @@ const resolveFileRef = (value: unknown) => {
   return null
 }
 
-const getFileUrl = (value: unknown) => {
+const getIconStyle = (value: unknown) => {
   const ref = resolveFileRef(value)
-  if (!ref) return ''
-  return getCmsImageUrl(ref)
+  if (!ref) return {}
+  const resolved = getCmsImageUrl(ref)
+  return {
+    maskImage: `url(${resolved})`,
+    WebkitMaskImage: `url(${resolved})`
+  }
+}
+
+const getColorVar = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `var(--color-${color})`
+  }
+  return ''
+}
+
+const getGridItemStyle = (item: any) => {
+  const style: Record<string, string> = {}
+  const iconColor = getColorVar(item?.icon_color)
+  if (iconColor) {
+    style['--grid-item-icon-color'] = iconColor
+  }
+  const textColor = getColorVar(item?.text_color)
+  if (textColor) {
+    style['--grid-item-text-color'] = textColor
+    style['--grid-item-title-hover-color'] = textColor
+  }
+  const backgroundColor = getColorVar(item?.background_color)
+  if (backgroundColor) {
+    style['--grid-item-bg-color'] = backgroundColor
+  }
+  return style
 }
 </script>
 
@@ -92,13 +125,17 @@ const getFileUrl = (value: unknown) => {
 
 .grid-item {
   padding: var(--space-xl);
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+  background: var(--grid-item-bg-color);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-l);
   text-align: center;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
+  --grid-item-bg-color: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+  --grid-item-text-color: var(--color-dark);
+  --grid-item-icon-color: var(--color-accent);
+  --grid-item-title-hover-color: var(--color-primary);
 
   &::before {
     content: '';
@@ -115,7 +152,7 @@ const getFileUrl = (value: unknown) => {
     transform: translateY(-8px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     border-color: rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.06));
+    background: var(--grid-item-bg-color);
 
     &::before {
       left: 100%;
@@ -126,7 +163,7 @@ const getFileUrl = (value: unknown) => {
     }
 
     .item-title {
-      color: var(--color-primary);
+      color: var(--grid-item-title-hover-color);
     }
   }
 }
@@ -153,31 +190,33 @@ const getFileUrl = (value: unknown) => {
 }
 
 .item-icon {
+  display: inline-block;
   width: 70px;
   height: 70px;
   margin-inline: auto;
   margin-bottom: var(--space-m);
   transition: all 0.4s ease;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 12px rgba(24, 0, 158, 0.1));
-  }
+  background-color: var(--grid-item-icon-color);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  filter: drop-shadow(0 4px 12px rgba(24, 0, 158, 0.1));
 }
 
 .item-title {
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: var(--space-s);
-  color: var(--color-dark);
+  color: var(--grid-item-text-color);
   transition: color 0.3s ease;
   line-height: 1.3;
 }
 
 .item-text {
-  color: var(--color-dark);
+  color: var(--grid-item-text-color);
   opacity: 0.75;
   line-height: 1.8;
   font-size: var(--text-small-size);

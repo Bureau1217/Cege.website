@@ -21,107 +21,44 @@
         </NuxtLink>
       </div>
 
-      <!-- Navigation à droite -->
-      <button
-        class="header-burger"
-        type="button"
-        :aria-expanded="isMenuOpen ? 'true' : 'false'"
-        aria-controls="header-menu"
-        :aria-label="isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
-        :class="{ 'is-open': isMenuOpen }"
-        @click="isMenuOpen = !isMenuOpen"
-      >
-        <span class="sr-only">Menu</span>
-        <span class="burger-line" />
-        <span class="burger-line" />
-        <span class="burger-line" />
-      </button>
-
-      <nav class="header-nav" :class="{ 'is-open': isMenuOpen }" id="header-menu">
+      <!-- Navigation desktop -->
+      <nav class="header-nav">
         <ul class="nav-list">
           <li v-for="item in navItems" :key="item.to" class="nav-item">
-            <NuxtLink
-              :to="item.to"
-              class="nav-link"
-              @click="isMenuOpen = false"
-            >
+            <NuxtLink :to="item.to" class="nav-link">
               {{ item.label }}
             </NuxtLink>
           </li>
         </ul>
-        <div v-if="footerData" class="mobile-menu-footer">
-          <div class="mobile-footer-contact">
-            <div class="mobile-footer-item" v-if="footerData.adresse">
-              <span
-                v-if="footerIcons.adresse?.url"
-                class="mobile-footer-icon"
-                :style="getIconStyle(footerIcons.adresse.url)"
-                aria-hidden="true"
-              />
-              <div class="mobile-footer-text" v-html="footerData.adresse" />
-            </div>
-
-            <div class="mobile-footer-item" v-if="footerData.telephone">
-              <span
-                v-if="footerIcons.telephone?.url"
-                class="mobile-footer-icon"
-                :style="getIconStyle(footerIcons.telephone.url)"
-                aria-hidden="true"
-              />
-              <div class="mobile-footer-text">
-                <a :href="`tel:${footerData.telephone}`">{{ footerData.telephone }}</a>
-              </div>
-            </div>
-
-            <div class="mobile-footer-item" v-if="footerData.email">
-              <span
-                v-if="footerIcons.email?.url"
-                class="mobile-footer-icon"
-                :style="getIconStyle(footerIcons.email.url)"
-                aria-hidden="true"
-              />
-              <div class="mobile-footer-text">
-                <a :href="`mailto:${footerData.email}`">{{ footerData.email }}</a>
-              </div>
-            </div>
-
-            <div class="mobile-footer-item" v-if="footerData.horaires">
-              <span
-                v-if="footerIcons.horaires?.url"
-                class="mobile-footer-icon"
-                :style="getIconStyle(footerIcons.horaires.url)"
-                aria-hidden="true"
-              />
-              <div class="mobile-footer-text" v-html="footerData.horaires" />
-            </div>
-          </div>
-        </div>
       </nav>
+
+      <!-- Bouton hamburger mobile -->
+      <MobileMenuToggle />
     </div>
+
+    <!-- Menu mobile (s'affiche en dessous du header) -->
+    <MobileMenu
+      :items="navItems"
+      :footer-data="footerData"
+      :footer-icons="footerIcons"
+      :get-icon-style="getIconStyle"
+    />
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useCmsImage } from '@/composables/useCmsImage'
+import MobileMenu from '@/components/MobileMenu.vue'
+import MobileMenuToggle from '@/components/MobileMenuToggle.vue'
 
-const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
+const { siteData: siteSettings } = useSiteSettings()
+
+const { data: footerResponse } = await useFetch<any>('/api/CMS_KQLRequest', {
   method: 'POST',
   body: {
     query: 'site',
     select: {
-      site: {
-        menu_logo: 'site.menu_logo.value',
-        files: {
-          query: 'site.files',
-          select: {
-            uuid: 'file.uuid',
-            url: 'file.url',
-            alt: 'file.alt.value',
-            extension: 'file.extension'
-          }
-        }
-      },
       footer: {
         query: "site.find('footer')",
         select: {
@@ -147,26 +84,27 @@ const { data } = await useFetch<any>('/api/CMS_KQLRequest', {
   }
 })
 
-const siteFiles = computed(() => siteData.value?.files || [])
-const footerData = computed(() => {
-  if (data.value && data.value.status === 'ok') {
-    return data.value.result.footer
+const siteData = computed(() => {
+  if (siteSettings.value && siteSettings.value.status === 'ok') {
+    return siteSettings.value.result
   }
   return null
 })
+
+const footerData = computed(() => {
+  if (footerResponse.value && footerResponse.value.status === 'ok') {
+    return footerResponse.value.result.footer
+  }
+  return null
+})
+
+const siteFiles = computed(() => siteData.value?.files || [])
 const footerFiles = computed(() => footerData.value?.files || [])
 const allFiles = computed(() => [...siteFiles.value, ...footerFiles.value])
 const { getCmsImageUrl } = useCmsImage(allFiles)
 
-const siteData = computed(() => {
-  if (data.value && data.value.status === 'ok') {
-    return data.value.result.site
-  }
-  return null
-})
-
-const footerFilesByUuid = computed(() => {
-  const files = footerData.value?.files || []
+const siteFilesByUuid = computed(() => {
+  const files = siteData.value?.files || []
   const map: Record<string, any> = {}
   files.forEach((file: any) => {
     if (file?.uuid) {
@@ -177,8 +115,8 @@ const footerFilesByUuid = computed(() => {
   return map
 })
 
-const siteFilesByUuid = computed(() => {
-  const files = siteData.value?.files || []
+const footerFilesByUuid = computed(() => {
+  const files = footerData.value?.files || []
   const map: Record<string, any> = {}
   files.forEach((file: any) => {
     if (file?.uuid) {
@@ -253,15 +191,16 @@ const getIconStyle = (url: string) => {
 
 const logoImage = computed(() => resolveLogo(siteData.value?.menu_logo))
 
-const logoSvg = ref<string | null>(null)
-
 const applyLogoColors = (svg: string) => {
-  const hasKnownColors = /#9eb2fb|#1de7a9|#16009d/i.test(svg)
+  const hasKnownColors = /#9eb2fb|#1de7a9|#16009d|#3b75db|#c64949|#45b76f/i.test(svg)
   if (hasKnownColors) {
     return svg
       .replace(/#9eb2fb/gi, 'var(--color-secondary)')
       .replace(/#1de7a9/gi, 'var(--color-accent)')
       .replace(/#16009d/gi, 'var(--color-primary)')
+      .replace(/#3b75db/gi, 'var(--color-primary)')
+      .replace(/#c64949/gi, 'var(--color-secondary)')
+      .replace(/#45b76f/gi, 'var(--color-accent)')
   }
 
   let pathIndex = 0
@@ -278,30 +217,31 @@ const applyLogoColors = (svg: string) => {
   })
 }
 
-const loadLogoSvg = async () => {
-  logoSvg.value = null
+// Charger le SVG côté serveur pour éviter le délai
+const getLogoUrl = () => {
   const logo = logoImage.value
-  if (!logo?.url) return
+  if (!logo?.url) return null
   const extension = logo.extension || ''
-  const isSvg = extension.toLowerCase() === 'svg' || logo.url.toLowerCase().includes('.svg')
-  if (!isSvg) return
-
-  try {
-    const resolved = getCmsImageUrl(logo.url)
-    const response = await fetch(resolved)
-    if (!response.ok) return
-    const rawSvg = await response.text()
-    logoSvg.value = applyLogoColors(rawSvg)
-  } catch {
-    logoSvg.value = null
-  }
+  const url = logo.url || ''
+  const looksSvg = extension.toLowerCase() === 'svg' || url.toLowerCase().includes('.svg')
+  const shouldProbe = looksSvg || url.startsWith('file://')
+  if (!shouldProbe) return null
+  return getCmsImageUrl(url)
 }
 
-watch(logoImage, () => {
-  if (process.client) {
-    loadLogoSvg()
+const { data: logoSvg } = await useAsyncData('logo-svg', async () => {
+  const url = getLogoUrl()
+  if (!url) return null
+  try {
+    const response = await $fetch<string>(url, { responseType: 'text' })
+    if (typeof response === 'string' && response.includes('<svg')) {
+      return applyLogoColors(response)
+    }
+  } catch {
+    // Ignore errors
   }
-}, { immediate: true })
+  return null
+})
 
 const navItems = [
   { to: '/', label: 'Accueil' },
@@ -309,24 +249,20 @@ const navItems = [
   { to: '/contact', label: 'Nous Contacter' }
 ]
 
-const isMenuOpen = ref(false)
 
-const footerIcons = computed(() => {
-  const current = footerData.value
-  return {
-    adresse: resolveFooterIcon(current?.icone_adresse),
-    telephone: resolveFooterIcon(current?.icone_telephone),
-    email: resolveFooterIcon(current?.icone_email),
-    horaires: resolveFooterIcon(current?.icone_horaires)
-  }
-})
+const footerIcons = computed(() => ({
+  adresse: resolveFooterIcon(footerData.value?.icone_adresse),
+  telephone: resolveFooterIcon(footerData.value?.icone_telephone),
+  email: resolveFooterIcon(footerData.value?.icone_email),
+  horaires: resolveFooterIcon(footerData.value?.icone_horaires)
+}))
 </script>
 
 <style scoped lang="scss">
 .header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   background: #f5f5f5;
 }
 
@@ -334,9 +270,7 @@ const footerIcons = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: calc(100% - (var(--page-gutter) * 2));
-  margin: 0 auto;
-  padding: var(--space-l) var(--page-gutter);
+  padding: var(--space-l) calc(var(--page-gutter) * 2);
 }
 
 .header-left {
@@ -379,101 +313,6 @@ const footerIcons = computed(() => {
   flex: 1;
   display: flex;
   justify-content: flex-end;
-}
-
-.header-burger {
-  display: none;
-  border: 0;
-  background: transparent;
-  padding: var(--space-xs);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 5px;
-  z-index: 200;
-}
-
-.burger-line {
-  display: block;
-  width: 26px;
-  height: 2px;
-  background: var(--color-primary);
-  border-radius: 999px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.header-burger.is-open .burger-line {
-  background: #fff;
-}
-
-.header-burger.is-open .burger-line:nth-child(2) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.header-burger.is-open .burger-line:nth-child(3) {
-  opacity: 0;
-}
-
-.header-burger.is-open .burger-line:nth-child(4) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.mobile-menu-footer {
-  display: none;
-}
-
-.mobile-footer-contact {
-  display: grid;
-  gap: var(--space-m);
-}
-
-.mobile-footer-item {
-  display: flex;
-  gap: var(--space-s);
-  align-items: flex-start;
-  padding: var(--space-m);
-  border-radius: var(--radius-m);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: white;
-}
-
-.mobile-footer-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  background-color: var(--color-accent);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-}
-
-.mobile-footer-text {
-  font-size: var(--text-small-size);
-  line-height: 1.5;
-  color: inherit;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
 }
 
 .nav-list {
@@ -535,59 +374,24 @@ const footerIcons = computed(() => {
 
 @media (max-width: 768px) {
   .header-inner {
-    padding: var(--space-m) var(--page-gutter-mobile);
+    padding: var(--space-m) calc(var(--page-gutter-mobile) * 2);
     flex-wrap: wrap;
   }
 
-  .header-burger {
-    display: inline-flex;
-    margin-left: auto;
-  }
-
   .header-nav {
-    order: 3;
-    width: 100%;
-    justify-content: flex-start;
     display: none;
-    position: fixed;
-    inset: 0;
-    background: var(--color-primary);
-    padding: var(--space-xxl) var(--space-xl) var(--space-xl);
-    z-index: 150;
-    align-items: flex-start;
-    flex-direction: column;
-    overflow-y: auto;
-    height: 100%;
-  }
-
-  .header-nav.is-open {
-    display: flex;
   }
 
   .nav-list {
-    flex-direction: column;
-    align-items: flex-start;
     gap: var(--space-m);
-    width: 100%;
   }
 
   .nav-link {
-    font-size: 2.5rem;
-    padding: var(--space-s) 0;
-    color: white;
+    padding: var(--space-s) var(--space-m);
 
     &::after {
-      background: white;
+      background: var(--color-primary);
     }
-  }
-
-  .mobile-menu-footer {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-l);
-    margin-top: auto;
-    padding-top: var(--space-xl);
-    width: 100%;
   }
 
   .logo {
@@ -605,7 +409,7 @@ const footerIcons = computed(() => {
 
 @media (max-width: 480px) {
   .header-inner {
-    padding: var(--space-m) var(--space-s);
+    padding: var(--space-m) calc(var(--page-gutter-mobile) * 2);
   }
 
   .nav-list {
@@ -613,13 +417,8 @@ const footerIcons = computed(() => {
   }
 
   .nav-link {
-    font-size: 2rem;
-    padding: var(--space-s) 0;
-    color: white;
-
-    &::after {
-      background: white;
-    }
+    font-size: 1.05rem;
+    padding: var(--space-s) var(--space-m);
   }
 
   .logo-image {

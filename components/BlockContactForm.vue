@@ -70,6 +70,7 @@
         type="submit"
         class="submit-button"
         :class="`style-${block.content.buttonstyle || 'primary'}`"
+        :style="getButtonStyle()"
         :disabled="isSubmitting"
       >
         {{ isSubmitting ? 'Envoi en cours...' : (block.content.buttonlabel || 'Envoyer') }}
@@ -105,6 +106,34 @@ const formData = reactive({
 const isSubmitting = ref(false)
 const submitSuccess = ref(false)
 const submitError = ref(false)
+
+const getColorVar = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `var(--color-${color})`
+  }
+  return ''
+}
+
+const getButtonStyle = () => {
+  const style: Record<string, string> = {}
+  const color = getColorVar(props.block.content.buttoncolor)
+  if (!color) return style
+
+  style['--form-button-color'] = color
+  style['--form-button-border-color'] = color
+  style['--form-button-hover-text-color'] = color
+
+  if (props.block.content.buttoncolor === 'neutral') {
+    style['--form-button-text-color'] = 'var(--color-dark)'
+    style['--form-button-border-color'] = 'var(--color-dark)'
+    style['--form-button-hover-text-color'] = 'var(--color-dark)'
+    style['--form-button-hover-bg'] = 'var(--color-neutral)'
+  } else {
+    style['--form-button-text-color'] = 'var(--color-neutral)'
+  }
+
+  return style
+}
 
 const handleSubmit = async () => {
   isSubmitting.value = true
@@ -247,7 +276,7 @@ const handleSubmit = async () => {
 .submit-button {
   grid-column: 1 / -1;
   padding: var(--space-m) var(--space-xl);
-  border: 2px solid var(--color-accent);
+  border: 2px solid var(--form-button-border-color, var(--form-button-color, var(--color-accent)));
   border-radius: 50px;
   font-size: 1rem;
   font-weight: 700;
@@ -256,12 +285,12 @@ const handleSubmit = async () => {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: var(--space-m);
-  background-color: var(--color-accent);
-  color: var(--color-primary);
+  background-color: var(--form-button-color, var(--color-accent));
+  color: var(--form-button-text-color, var(--color-neutral));
 
   &:hover:not(:disabled) {
-    background-color: transparent;
-    color: var(--color-accent);
+    background-color: var(--form-button-hover-bg, transparent);
+    color: var(--form-button-hover-text-color, var(--form-button-color, var(--color-accent)));
   }
 
   &:disabled {

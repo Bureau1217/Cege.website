@@ -110,30 +110,20 @@
             class="column-image"
           />
           <div v-else-if="block.type === 'list' && block.content?.text" class="column-list" v-html="block.content.text"></div>
-          <div v-else-if="block.type === 'feature-item' && block.content?.items" class="feature-items">
-            <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" class="feature-item-card">
-              <span
-                v-if="item.icon"
-                class="feature-item-icon"
-                :style="getIconStyle(item.icon)"
-                aria-hidden="true"
-              />
-              <div class="feature-item-content">
-                <h3 v-if="item.title" class="feature-item-title">{{ item.title }}</h3>
-                <p v-if="item.text" class="feature-item-text" v-html="item.text"></p>
-              </div>
-            </div>
-          </div>
           <div v-else-if="block.type === 'features-grid' && block.content?.items" class="features-grid-wrapper">
             <div class="features-grid">
-              <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" :class="['grid-item', { 'grid-item--no-number': !item.number || item.shownumber === 'false' }]">
+              <div
+                v-for="(item, itemIdx) in block.content.items"
+                :key="itemIdx"
+                :class="['grid-item', { 'grid-item--no-number': !item.number || item.shownumber === 'false' }]"
+                :style="getGridItemStyle(item)"
+              >
                 <template v-if="!item.number || item.shownumber === 'false'">
-                  <!-- No number: icon on left, content in middle, nothing on right -->
-                  <img
-                    v-if="item.icon && getImageFromUuid(item.icon)"
-                    :src="getImageFromUuid(item.icon)?.reg?.url"
-                    :alt="item.title || ''"
-                    class="grid-item-icon grid-item-icon--white"
+                  <span
+                    v-if="resolveIconRef(item.icon)"
+                    class="grid-item-icon"
+                    :style="getIconStyle(item.icon)"
+                    aria-hidden="true"
                   />
                   <div class="grid-item-content">
                     <h4 v-if="item.title" class="grid-item-title">{{ item.title }}</h4>
@@ -141,17 +131,16 @@
                   </div>
                 </template>
                 <template v-else>
-                  <!-- Has number: number on left, content in middle, icon on right -->
                   <span class="grid-item-number">{{ item.number }}</span>
                   <div class="grid-item-content">
                     <h4 v-if="item.title" class="grid-item-title">{{ item.title }}</h4>
                     <p v-if="item.text" class="grid-item-text" v-html="item.text"></p>
                   </div>
-                  <img
-                    v-if="item.icon && getImageFromUuid(item.icon)"
-                    :src="getImageFromUuid(item.icon)?.reg?.url"
-                    :alt="item.title || ''"
+                  <span
+                    v-if="resolveIconRef(item.icon)"
                     class="grid-item-icon"
+                    :style="getIconStyle(item.icon)"
+                    aria-hidden="true"
                   />
                 </template>
               </div>
@@ -243,6 +232,30 @@ const getIconStyle = (value: unknown) => {
     maskImage: `url(${resolved})`,
     WebkitMaskImage: `url(${resolved})`
   }
+}
+
+const getColorVar = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `var(--color-${color})`
+  }
+  return ''
+}
+
+const getGridItemStyle = (item: any) => {
+  const style: Record<string, string> = {}
+  const iconColor = getColorVar(item?.icon_color)
+  if (iconColor) {
+    style['--grid-item-icon-color'] = iconColor
+  }
+  const textColor = getColorVar(item?.text_color)
+  if (textColor) {
+    style['--grid-item-text-color'] = textColor
+  }
+  const backgroundColor = getColorVar(item?.background_color)
+  if (backgroundColor) {
+    style['--grid-item-bg-color'] = backgroundColor
+  }
+  return style
 }
 
 const getHeadingTag = (level?: string) => {
@@ -347,56 +360,6 @@ const getGridColumns = (columns: string): number => {
   height: auto;
   border-radius: var(--radius-m);
   object-fit: cover;
-}
-
-.feature-items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-l);
-}
-
-.feature-item-card {
-  display: flex;
-  gap: var(--space-l);
-  padding: var(--space-l);
-  background: #f9f9f9;
-}
-
-.feature-item-icon {
-  width: 40px;
-  height: 40px;
-  display: inline-block;
-  flex-shrink: 0;
-  background-color: var(--color-accent);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  border-radius: 0;
-}
-
-.feature-item-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-s);
-}
-
-.feature-item-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin: 0;
-  color: var(--color-primary);
-}
-
-.feature-item-text {
-  font-size: var(--text-small-size);
-  font-weight: var(--text-small-weight);
-  line-height: 1.6;
-  margin: 0;
-  color: var(--color-dark);
-  opacity: 0.85;
 }
 
 .features-grid-wrapper {
@@ -638,19 +601,24 @@ const getGridColumns = (columns: string): number => {
   align-items: center;
   text-align: left;
   padding: var(--space-l);
-  background: #f9f9f9;
+  background: var(--grid-item-bg-color);
   gap: var(--space-l);
   border-radius: var(--radius-m);
+  --grid-item-bg-color: #f9f9f9;
+  --grid-item-text-color: var(--color-primary);
+  --grid-item-icon-color: var(--color-accent);
 
   &.grid-item--no-number {
-    background: var(--color-primary);
+    --grid-item-bg-color: var(--color-primary);
+    --grid-item-text-color: #fff;
+    --grid-item-icon-color: #fff;
   }
 }
 
 .grid-item-number {
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--color-primary);
+  color: var(--grid-item-text-color);
   flex-shrink: 0;
   min-width: 80px;
   text-align: center;
@@ -667,34 +635,29 @@ const getGridColumns = (columns: string): number => {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-
-  .grid-item--no-number & {
-    color: white;
-  }
 }
 
 .grid-item-icon {
+  display: inline-block;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  object-fit: contain;
+  background-color: var(--grid-item-icon-color);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
   border-radius: 0;
-}
-
-.grid-item-icon--white {
-  filter: brightness(0) invert(1);
 }
 
 .grid-item-title {
   font-size: 1.1rem;
   font-weight: 800;
   margin: 0;
-  color: var(--color-primary);
+  color: var(--grid-item-text-color);
   line-height: 1.3;
-
-  .grid-item--no-number & {
-    color: white;
-  }
 }
 
 .grid-item-text {
@@ -702,13 +665,8 @@ const getGridColumns = (columns: string): number => {
   font-weight: var(--text-base-weight);
   line-height: 1.4;
   margin: 0;
-  color: var(--color-primary);
+  color: var(--grid-item-text-color);
   opacity: 0.9;
-
-  .grid-item--no-number & {
-    color: white;
-    opacity: 0.9;
-  }
 }
 
 @media (max-width: 768px) {

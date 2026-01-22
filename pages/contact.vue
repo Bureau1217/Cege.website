@@ -4,7 +4,7 @@
       <!-- Formulaire Section -->
       <div id="formulaire">
         <SectionFormulaire
-          :titre="formatSectionTitle(contact.formulaire_titre, 'Formulaire')"
+          :titre="formatSectionTitle(contact.formulaire_titre, 'Formulaire', contact.formulaire_titre_couleur, contact.formulaire_titre_taille)"
           :blocks="contact.formulaire || []"
           variant="white"
           layout="split"
@@ -14,12 +14,16 @@
       </div>
     </template>
 
+    <!-- Loading State -->
+    <template v-else-if="pending">
+      <div class="loading-state"></div>
+    </template>
+
     <template v-else>
       <div class="error-state">
         <h1>Erreur de chargement</h1>
         <p>Impossible de charger le contenu depuis le CMS.</p>
         <p v-if="data?.message">{{ data.message }}</p>
-        <p v-if="pending">Chargement en cours...</p>
       </div>
     </template>
   </main>
@@ -77,6 +81,8 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
             twitterAuthor: 'page.twitterAuthor.value'
           },
           formulaire_titre: 'page.formulaire_titre.value',
+          formulaire_titre_couleur: 'page.formulaire_titre_couleur.value',
+          formulaire_titre_taille: 'page.formulaire_titre_taille.value',
           formulaire_intro: 'page.formulaire_intro.toBlocks.toHtml',
           formulaire: 'page.formulaire.toBlocks.toArray'
         }
@@ -101,10 +107,27 @@ const escapeHtml = (value: string) => {
     .replace(/'/g, '&#39;')
 }
 
-const formatSectionTitle = (value?: string, fallback?: string) => {
+const getTitleColorClass = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `color-${color}`
+  }
+  return ''
+}
+
+const getTitleTag = (size?: string) => {
+  if (size === 'h1' || size === 'h2' || size === 'h3' || size === 'h4') {
+    return size
+  }
+  return 'h4'
+}
+
+const formatSectionTitle = (value?: string, fallback?: string, color?: string, size?: string) => {
   const text = (value || '').trim() || (fallback || '').trim()
   if (!text) return ''
-  return `<h4>${escapeHtml(text)}</h4>`
+  const tag = getTitleTag(size)
+  const colorClass = getTitleColorClass(color)
+  const classAttr = colorClass ? ` class="${colorClass}"` : ''
+  return `<${tag}${classAttr}>${escapeHtml(text)}</${tag}>`
 }
 
 useSeo({

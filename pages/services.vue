@@ -4,7 +4,7 @@
       <!-- Nos Services -->
       <SectionTwoColumns
         sectionId="nos-services"
-        :titre="formatSectionTitle(services.nosServices_titre, 'Nos Services')"
+        :titre="formatSectionTitle(services.nosServices_titre, 'Nos Services', services.nosServices_titre_couleur, services.nosServices_titre_taille)"
         :colonneGauche="services.nosServices_colonne_gauche || []"
         :colonneDroite="services.nosServices_colonne_droite || []"
         :images="services.images || []"
@@ -13,7 +13,7 @@
       <!-- Notre Démarche -->
       <SectionNotreDemarche
         sectionId="notre-demarche"
-        :titre="formatSectionTitle(services.notreDemarche_titre, 'Notre Démarche')"
+        :titre="formatSectionTitle(services.notreDemarche_titre, 'Notre Démarche', services.notreDemarche_titre_couleur, services.notreDemarche_titre_taille)"
         :colonneGauche="services.notreDemarche || []"
         :colonneDroite="[]"
         :images="services.images || []"
@@ -24,7 +24,7 @@
       <SectionTwoColumns
         variant="white"
         sectionId="controle-bornes"
-        :titre="formatSectionTitle(services.controleBornes_titre, 'Contrôle des bornes de recharge')"
+        :titre="formatSectionTitle(services.controleBornes_titre, 'Contrôle des bornes de recharge', services.controleBornes_titre_couleur, services.controleBornes_titre_taille)"
         :colonneGauche="services.controleBornes_colonne_gauche || []"
         :colonneDroite="services.controleBornes_colonne_droite || []"
         :images="services.images || []"
@@ -34,11 +34,16 @@
       <SectionTwoColumns
         variant="white"
         sectionId="controle-photovoltaique"
-        :titre="formatSectionTitle(services.controlePhotovoltaique_titre, 'Contrôles photovoltaïques')"
+        :titre="formatSectionTitle(services.controlePhotovoltaique_titre, 'Contrôles photovoltaïques', services.controlePhotovoltaique_titre_couleur, services.controlePhotovoltaique_titre_taille)"
         :colonneGauche="services.controlePhotovoltaique_colonne_gauche || []"
         :colonneDroite="services.controlePhotovoltaique_colonne_droite || []"
         :images="services.images || []"
       />
+    </template>
+
+    <!-- Loading State -->
+    <template v-else-if="pending">
+      <div class="loading-state"></div>
     </template>
 
     <!-- Page d'erreur -->
@@ -48,7 +53,6 @@
         <p>Impossible de charger le contenu depuis le CMS.</p>
         <p v-if="data?.message">{{ data.message }}</p>
         <p v-if="data?.status">Status: {{ data.status }}</p>
-        <p v-if="pending">Chargement en cours...</p>
       </div>
     </template>
   </main>
@@ -107,17 +111,25 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           },
 
           nosServices_titre: 'page.nosServices_titre.value',
+          nosServices_titre_couleur: 'page.nosServices_titre_couleur.value',
+          nosServices_titre_taille: 'page.nosServices_titre_taille.value',
           nosServices_colonne_gauche: 'page.nosServices_colonne_gauche.toBlocks.toArray',
           nosServices_colonne_droite: 'page.nosServices_colonne_droite.toBlocks.toArray',
 
           notreDemarche_titre: 'page.notreDemarche_titre.value',
+          notreDemarche_titre_couleur: 'page.notreDemarche_titre_couleur.value',
+          notreDemarche_titre_taille: 'page.notreDemarche_titre_taille.value',
           notreDemarche: 'page.notreDemarche.toBlocks.toArray',
 
           controleBornes_titre: 'page.controleBornes_titre.value',
+          controleBornes_titre_couleur: 'page.controleBornes_titre_couleur.value',
+          controleBornes_titre_taille: 'page.controleBornes_titre_taille.value',
           controleBornes_colonne_gauche: 'page.controleBornes_colonne_gauche.toBlocks.toArray',
           controleBornes_colonne_droite: 'page.controleBornes_colonne_droite.toBlocks.toArray',
 
           controlePhotovoltaique_titre: 'page.controlePhotovoltaique_titre.value',
+          controlePhotovoltaique_titre_couleur: 'page.controlePhotovoltaique_titre_couleur.value',
+          controlePhotovoltaique_titre_taille: 'page.controlePhotovoltaique_titre_taille.value',
           controlePhotovoltaique_colonne_gauche: 'page.controlePhotovoltaique_colonne_gauche.toBlocks.toArray',
           controlePhotovoltaique_colonne_droite: 'page.controlePhotovoltaique_colonne_droite.toBlocks.toArray',
 
@@ -157,10 +169,27 @@ const escapeHtml = (value: string) => {
     .replace(/'/g, '&#39;')
 }
 
-const formatSectionTitle = (value?: string, fallback?: string) => {
+const getTitleColorClass = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `color-${color}`
+  }
+  return ''
+}
+
+const getTitleTag = (size?: string) => {
+  if (size === 'h1' || size === 'h2' || size === 'h3' || size === 'h4') {
+    return size
+  }
+  return 'h4'
+}
+
+const formatSectionTitle = (value?: string, fallback?: string, color?: string, size?: string) => {
   const text = (value || '').trim() || (fallback || '').trim()
   if (!text) return ''
-  return `<h4>${escapeHtml(text)}</h4>`
+  const tag = getTitleTag(size)
+  const colorClass = getTitleColorClass(color)
+  const classAttr = colorClass ? ` class="${colorClass}"` : ''
+  return `<${tag}${classAttr}>${escapeHtml(text)}</${tag}>`
 }
 
 useSeo({

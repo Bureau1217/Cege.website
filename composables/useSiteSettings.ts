@@ -2,10 +2,21 @@ import { watch } from 'vue'
 
 export const useSiteSettings = () => {
   const { data: siteData } = useFetch<any>('/api/CMS_KQLRequest', {
+    key: 'site-settings',
     method: 'POST',
     body: {
       query: 'site',
       select: {
+        menu_logo: 'site.menu_logo.value',
+        files: {
+          query: 'site.files',
+          select: {
+            uuid: 'file.uuid',
+            url: 'file.url',
+            alt: 'file.alt.value',
+            extension: 'file.extension'
+          }
+        },
         colorPrimary: 'site.colorPrimary.value',
         colorSecondary: 'site.colorSecondary.value',
         colorAccent: 'site.colorAccent.value',

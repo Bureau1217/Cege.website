@@ -19,12 +19,16 @@
       </StyleBlock>
     </template>
 
+    <!-- Loading State -->
+    <template v-else-if="pending">
+      <div class="loading-state"></div>
+    </template>
+
     <template v-else>
       <div class="error-state">
         <h1>Erreur de chargement</h1>
         <p>Impossible de charger le contenu depuis le CMS.</p>
         <p v-if="data?.message">{{ data.message }}</p>
-        <p v-if="pending">Chargement en cours...</p>
       </div>
     </template>
   </main>

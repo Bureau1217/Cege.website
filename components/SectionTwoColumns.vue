@@ -35,8 +35,8 @@
               class="column-image"
             />
             <div v-else-if="block.type === 'list' && block.content?.text" class="column-list" v-html="block.content.text"></div>
-            <div v-else-if="block.type === 'feature-item' && block.content?.items" class="feature-items">
-              <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" class="feature-item-card">
+            <div v-else-if="block.type === 'features-grid' && block.content?.items" class="feature-items">
+              <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" class="feature-item-card" :style="getFeatureItemStyle(item)">
                 <span
                   v-if="item.icon"
                   class="feature-item-icon"
@@ -84,8 +84,8 @@
               class="column-image"
             />
             <div v-else-if="block.type === 'list' && block.content?.text" class="column-list" v-html="block.content.text"></div>
-            <div v-else-if="block.type === 'feature-item' && block.content?.items" class="feature-items">
-              <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" class="feature-item-card">
+            <div v-else-if="block.type === 'features-grid' && block.content?.items" class="feature-items">
+              <div v-for="(item, itemIdx) in block.content.items" :key="itemIdx" class="feature-item-card" :style="getFeatureItemStyle(item)">
                 <span
                   v-if="item.icon"
                   class="feature-item-icon"
@@ -193,6 +193,31 @@ const getTextColorClass = (color?: string) => {
   }
   return 'color-dark'
 }
+
+const getColorVar = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `var(--color-${color})`
+  }
+  return ''
+}
+
+const getFeatureItemStyle = (item: any) => {
+  const style: Record<string, string> = {}
+  const iconColor = getColorVar(item?.icon_color)
+  if (iconColor) {
+    style['--feature-item-icon-color'] = iconColor
+  }
+  const textColor = getColorVar(item?.text_color)
+  if (textColor) {
+    style['--feature-item-title-color'] = textColor
+    style['--feature-item-text-color'] = textColor
+  }
+  const backgroundColor = getColorVar(item?.background_color)
+  if (backgroundColor) {
+    style['--feature-item-bg-color'] = backgroundColor
+  }
+  return style
+}
 </script>
 
 <style scoped lang="scss">
@@ -232,8 +257,12 @@ const getTextColorClass = (color?: string) => {
   display: flex;
   gap: var(--space-l);
   padding: var(--space-l);
-  background: #f9f9f9;
   border-radius: var(--radius-m);
+  background: var(--feature-item-bg-color);
+  --feature-item-icon-color: var(--color-accent);
+  --feature-item-title-color: var(--color-primary);
+  --feature-item-text-color: var(--color-dark);
+  --feature-item-bg-color: #f9f9f9;
 }
 
 .feature-item-icon {
@@ -241,7 +270,7 @@ const getTextColorClass = (color?: string) => {
   height: 40px;
   display: inline-block;
   flex-shrink: 0;
-  background-color: var(--color-accent);
+  background-color: var(--feature-item-icon-color);
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -261,7 +290,7 @@ const getTextColorClass = (color?: string) => {
   font-size: 1.1rem;
   font-weight: 800;
   margin: 0;
-  color: var(--color-primary);
+  color: var(--feature-item-title-color);
 }
 
 .feature-item-text {
@@ -269,9 +298,10 @@ const getTextColorClass = (color?: string) => {
   font-weight: var(--text-small-weight);
   line-height: 1.6;
   margin: 0;
-  color: var(--color-dark);
+  color: var(--feature-item-text-color);
   opacity: 0.85;
 }
+
 
 @media (max-width: 768px) {
   .two-columns-inner {

@@ -4,7 +4,8 @@
       v-if="content?.text && (content?.link || content?.url)"
       :href="content.link || content.url"
       :target="content.target || '_self'"
-      :class="['button', `button--${getVariant()}`]"
+      :class="['button', `button--${getVariant()}`, { 'button--review': isReviewButton }]"
+      :style="getButtonStyle()"
     >
       {{ content.text }}
     </a>
@@ -19,6 +20,39 @@ const props = defineProps<{
 }>()
 
 const content = computed(() => props.block.content || props.block)
+
+const isReviewButton = computed(() => {
+  const text = String(content.value?.text || '').trim().toLowerCase()
+  return text === 'laisser un avis' || text.startsWith('laisser un avis')
+})
+
+const getColorVar = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `var(--color-${color})`
+  }
+  return ''
+}
+
+const getButtonStyle = () => {
+  const style: Record<string, string> = {}
+  const color = getColorVar(content.value?.color)
+  if (!color) return style
+
+  style['--button-color'] = color
+  style['--button-border-color'] = color
+  style['--button-hover-text-color'] = color
+
+  if (content.value?.color === 'neutral') {
+    style['--button-text-color'] = 'var(--color-dark)'
+    style['--button-border-color'] = 'var(--color-dark)'
+    style['--button-hover-text-color'] = 'var(--color-dark)'
+    style['--button-hover-bg'] = 'var(--color-neutral)'
+  } else {
+    style['--button-text-color'] = 'var(--color-neutral)'
+  }
+
+  return style
+}
 
 const getVariant = () => {
   const style = content.value?.style || content.value?.variant
@@ -58,27 +92,34 @@ const getAlign = () => {
   cursor: pointer;
 
   &--primary {
-    background-color: var(--color-accent);
-    color: #fff;
-    border: 2px solid var(--color-accent);
+    background-color: var(--button-color, var(--color-accent));
+    color: var(--button-text-color, #fff);
+    border: 2px solid var(--button-border-color, var(--button-color, var(--color-accent)));
 
     &:hover {
-      background-color: var(--color-accent);
-      color: #fff;
-      border: 2px solid var(--color-accent);
+      background-color: var(--button-color, var(--color-accent));
+      color: var(--button-text-color, #fff);
+      border: 2px solid var(--button-border-color, var(--button-color, var(--color-accent)));
       opacity: 0.9;
     }
   }
 
   &--outline {
     background-color: transparent;
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
+    color: var(--button-color, var(--color-accent));
+    border: 2px solid var(--button-border-color, var(--button-color, var(--color-accent)));
 
     &:hover {
-      background-color: var(--color-accent);
-      color: white;
+      background-color: var(--button-color, var(--color-accent));
+      color: var(--button-text-color, #fff);
     }
+  }
+
+  &--review:hover {
+    background-color: var(--button-hover-bg, #fff);
+    color: var(--button-hover-text-color, var(--button-color, var(--color-accent)));
+    border-color: var(--button-border-color, var(--button-color, var(--color-accent)));
+    opacity: 1;
   }
 }
 

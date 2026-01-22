@@ -21,7 +21,7 @@
       <!-- Notre Entreprise Section -->
       <section v-if="data.result.home.notreEntreprise_colonne_gauche || data.result.home.notreEntreprise_colonne_droite" :id="`notre-entreprise`" class="section-with-anchor">
         <SectionTwoColumns
-          :titre="formatSectionTitle(data.result.home.notreEntreprise_titre, 'Notre Entreprise')"
+          :titre="formatSectionTitle(data.result.home.notreEntreprise_titre, 'Notre Entreprise', data.result.home.notreEntreprise_titre_couleur, data.result.home.notreEntreprise_titre_taille)"
           :colonneGauche="data.result.home.notreEntreprise_colonne_gauche || []"
           :colonneDroite="data.result.home.notreEntreprise_colonne_droite || []"
           :images="data.result.home.images || []"
@@ -32,7 +32,7 @@
       <!-- Nos Services Section -->
       <section v-if="data.result.services" id="nos-services" class="services-section">
         <div class="services-inner">
-          <div class="services-title" v-html="formatSectionTitle(data.result.home.nosServices_titre, 'Nos Services')" />
+          <div class="services-title" v-html="formatSectionTitle(data.result.home.nosServices_titre, 'Nos Services', data.result.home.nosServices_titre_couleur, data.result.home.nosServices_titre_taille)" />
           <div class="services-cards">
             <a v-if="(data.result.services as any).nosServices_titre" href="/services#nos-services" class="service-card">
               <div class="service-card-image" v-if="nosServicesImage">
@@ -71,7 +71,7 @@
       <!-- Avis Section -->
       <section v-if="data.result.home.avis && data.result.home.avis.length > 0" :id="`avis`" class="section-with-anchor">
         <SectionAvis
-          :titre="formatSectionTitle(data.result.home.avis_titre, 'Avis')"
+          :titre="formatSectionTitle(data.result.home.avis_titre, 'Avis', data.result.home.avis_titre_couleur, data.result.home.avis_titre_taille)"
           :blocks="data.result.home.avis"
           :files="data.result.home.images || []"
         />
@@ -90,13 +90,17 @@
 
     </template>
 
+    <!-- Loading State -->
+    <template v-else-if="pending">
+      <div class="loading-state"></div>
+    </template>
+
     <!-- Error State -->
     <template v-else>
       <div class="error-state section container">
         <h1>Erreur de chargement</h1>
         <p>Impossible de charger le contenu depuis le CMS.</p>
         <p v-if="data">Status: {{ data.status }}</p>
-        <p v-if="pending">Chargement en cours...</p>
       </div>
     </template>
   </main>
@@ -164,13 +168,19 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
             twitterAuthor: 'page.twitterAuthor.value'
           },
           notreEntreprise_titre: 'page.notreEntreprise_titre.value',
+          notreEntreprise_titre_couleur: 'page.notreEntreprise_titre_couleur.value',
+          notreEntreprise_titre_taille: 'page.notreEntreprise_titre_taille.value',
           notreEntreprise_colonne_gauche: 'page.notreEntreprise_colonne_gauche.toBlocks.toArray',
           notreEntreprise_colonne_droite: 'page.notreEntreprise_colonne_droite.toBlocks.toArray',
           nosServices_titre: 'page.nosServices_titre.value',
+          nosServices_titre_couleur: 'page.nosServices_titre_couleur.value',
+          nosServices_titre_taille: 'page.nosServices_titre_taille.value',
           nosServices_cartes_taille: 'page.nosServices_cartes_taille.value',
           nosServices_cartes_couleur: 'page.nosServices_cartes_couleur.value',
           image: 'page.content.image.toBlocks.toArray',
           avis_titre: 'page.avis_titre.value',
+          avis_titre_couleur: 'page.avis_titre_couleur.value',
+          avis_titre_taille: 'page.avis_titre_taille.value',
           avis: 'page.avis.toBlocks.toArray',
           images: {
             query: 'page.files',
@@ -233,10 +243,27 @@ const escapeHtml = (value: string) => {
     .replace(/'/g, '&#39;')
 }
 
-const formatSectionTitle = (value?: string, fallback?: string) => {
+const getTitleColorClass = (color?: string) => {
+  if (color === 'primary' || color === 'secondary' || color === 'accent' || color === 'neutral' || color === 'dark') {
+    return `color-${color}`
+  }
+  return ''
+}
+
+const getTitleTag = (size?: string) => {
+  if (size === 'h1' || size === 'h2' || size === 'h3' || size === 'h4') {
+    return size
+  }
+  return 'h4'
+}
+
+const formatSectionTitle = (value?: string, fallback?: string, color?: string, size?: string) => {
   const text = (value || '').trim() || (fallback || '').trim()
   if (!text) return ''
-  return `<h4>${escapeHtml(text)}</h4>`
+  const tag = getTitleTag(size)
+  const colorClass = getTitleColorClass(color)
+  const classAttr = colorClass ? ` class="${colorClass}"` : ''
+  return `<${tag}${classAttr}>${escapeHtml(text)}</${tag}>`
 }
 
 const formatCardTitle = (value?: string) => {
@@ -514,7 +541,7 @@ section.section-with-anchor {
 }
 
 .services-title {
-  color: var(--color-primary);
+  color: var(--color-secondary);
   margin-bottom: var(--space-xl);
   text-transform: capitalize;
 }
@@ -525,6 +552,22 @@ section.section-with-anchor {
 .services-title :deep(h4) {
   margin: 0;
   line-height: 1.2;
+}
+
+.services-title :deep(h1) {
+  font-size: clamp(2rem, 3.2vw, 2.6rem);
+}
+
+.services-title :deep(h2) {
+  font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+}
+
+.services-title :deep(h3) {
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+}
+
+.services-title :deep(h4) {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
 }
 
 .services-title :deep(p) {

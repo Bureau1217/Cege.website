@@ -36,7 +36,6 @@ import StyleBlock from './StyleBlock.vue'
 import BlockHeading from '@/components/BlockHeading.vue'
 import BlockText from '@/components/BlockText.vue'
 import BlockImage from '@/components/BlockImage.vue'
-import BlockFeatureItem from '@/components/BlockFeatureItem.vue'
 import BlockFeaturesGrid from '@/components/BlockFeaturesGrid.vue'
 import BlockTestimonials from '@/components/BlockTestimonials.vue'
 import BlockContactInfo from '@/components/BlockContactInfo.vue'
@@ -61,7 +60,6 @@ const getBlockComponent = (type: string) => {
     'heading': BlockHeading,
     'text': BlockText,
     'image': BlockImage,
-    'feature-item': BlockFeatureItem,
     'features-grid': BlockFeaturesGrid,
     'testimonials': BlockTestimonials,
     'contact-info': BlockContactInfo,
@@ -72,7 +70,7 @@ const getBlockComponent = (type: string) => {
 }
 
 const getBlockProps = (block: any) => {
-  const withFiles = ['image', 'feature-item', 'features-grid', 'contact-info']
+  const withFiles = ['image', 'features-grid', 'contact-info']
   if (withFiles.includes(block.type)) {
     return { block, files: props.files }
   }

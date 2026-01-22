@@ -14,4 +14,14 @@ export default defineNuxtConfig({
     '@/assets/styles/main.scss'
   ],
   ssr: true,
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    head: {
+      style: [
+        {
+          innerHTML: '.app-content { opacity: 0; } .app-content.is-ready { opacity: 1; transition: opacity 0.3s ease; }'
+        }
+      ]
+    }
+  }
 })
