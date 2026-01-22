@@ -53,11 +53,16 @@ export const useCmsImage = (files?: Array<any> | { value: Array<any> }) => {
     try {
       const cms = new URL(cmsUrl)
       const target = new URL(value)
+      // Si l'image vient du CMS, utiliser le proxy pour éviter le mixed content
       if (cms.origin === target.origin) {
-        return `${target.pathname}${target.search}${target.hash}`
+        return `/api/proxy-image?url=${encodeURIComponent(value)}`
       }
     } catch {
       // Ignore malformed URLs and fall back to original value.
+    }
+    // Si c'est une URL HTTP externe, utiliser aussi le proxy
+    if (value.startsWith('http://')) {
+      return `/api/proxy-image?url=${encodeURIComponent(value)}`
     }
     return value
   }
