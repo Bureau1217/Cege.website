@@ -27,6 +27,9 @@ jobs:
           API_AUTH_EMAIL: ${{ secrets.CMS_AUTH_EMAIL }}
           API_AUTH_PASSWORD: ${{ secrets.CMS_AUTH_PASSWORD }}
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Deploy via SFTP
         run: |
           lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST" -e "
