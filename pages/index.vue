@@ -8,13 +8,12 @@
     <template v-if="data && data.status === 'ok' && data.result?.home">
       <!-- Hero Section -->
       <section v-if="data.result.home.hero_titre || heroImage" id="hero" class="hero-section">
-        <div class="hero-inner">
-          <div class="hero-content">
-            <div v-if="data.result.home.hero_titre" class="hero-title" v-html="data.result.home.hero_titre" />
-          </div>
-          <div v-if="heroImage" class="hero-image-wrapper">
-            <img :src="proxyImageUrl(heroImage.url)" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
-          </div>
+        <div v-if="heroImage" class="hero-image-wrapper">
+          <img :src="proxyImageUrl(heroImage.url)" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
+        </div>
+        <div class="hero-overlay" />
+        <div class="hero-content">
+          <div v-if="data.result.home.hero_titre" class="hero-title" v-html="data.result.home.hero_titre" />
         </div>
       </section>
 
@@ -380,34 +379,47 @@ const controlePhotovoltaiqueImage = computed(() => {
 }
 
 .hero-section {
-  margin: var(--space-xl) var(--page-gutter);
-  padding: 0;
-  width: 100%;
-  max-width: calc(100% - (var(--page-gutter) * 2));
-  box-sizing: border-box;
+  position: relative;
+  min-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 var(--page-gutter);
+  border-radius: var(--radius-l);
 }
 
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--page-gutter);
-  align-items: stretch;
+.hero-image-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .hero-content {
-  background: var(--color-primary);
-  border-radius: var(--radius-l);
-  padding: var(--space-xxxl) var(--space-xxl);
+  position: relative;
+  z-index: 2;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 600px;
+  padding: var(--space-xxxl) var(--space-xxl);
+  max-width: 900px;
 }
 
 .hero-title {
   color: white;
-  margin: 0 0 var(--space-l) 0;
+  margin: 0;
 }
 
 .hero-title :deep(h1),
@@ -442,58 +454,14 @@ const controlePhotovoltaiqueImage = computed(() => {
   line-height: 1.6;
 }
 
-.hero-title :deep(.color-primary) {
-  color: var(--color-primary);
-}
-
-.hero-title :deep(.color-secondary) {
-  color: var(--color-secondary);
-}
-
-.hero-title :deep(.color-accent) {
-  color: var(--color-accent);
-}
-
-.hero-title :deep(.color-neutral) {
-  color: var(--color-neutral);
-}
-
-.hero-title :deep(.color-dark) {
-  color: var(--color-dark);
-}
-
-.hero-image-wrapper {
-  border-radius: var(--radius-l);
-  overflow: hidden;
-  min-height: 850px;
-}
-
-.hero-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 @media (max-width: 768px) {
   .hero-section {
-    margin: var(--space-l) var(--page-gutter-mobile);
-    padding: 0;
-    max-width: calc(100% - (var(--page-gutter-mobile) * 2));
-  }
-
-  .hero-inner {
-    grid-template-columns: 1fr;
-    gap: var(--page-gutter-mobile);
+    min-height: 80vh;
+    margin: 0 var(--page-gutter-mobile);
   }
 
   .hero-content {
     padding: var(--space-xl) var(--space-l);
-  }
-
-  .hero-image-wrapper {
-    min-height: 320px;
-    height: 40vh;
   }
 }
 

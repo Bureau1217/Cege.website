@@ -70,6 +70,9 @@
           <div class="schema-note schema-note--left">
             <span class="schema-note-text">Aucuns défauts</span>
           </div>
+          <div class="schema-note schema-note--right">
+            <span class="schema-note-text">Aucuns défauts</span>
+          </div>
           <div v-if="schemaFullItem" class="schema-card schema-card--full" :class="{ 'schema-card--no-number': !schemaFullItem.showNumber }">
             <div class="schema-card-inner">
               <span v-if="schemaFullItem.showNumber" class="schema-number">{{ schemaFullItem.number }}</span>
@@ -473,6 +476,16 @@ const getGridColumns = (columns: string): number => {
   padding: var(--space-xs) var(--space-s);
 }
 
+.schema-note.schema-note--right {
+  grid-column: 3 / 4;
+  justify-self: center;
+  width: 70%;
+  max-width: 320px;
+  margin-top: 0;
+  min-height: clamp(48px, 9vw, 70px);
+  padding: var(--space-xs) var(--space-s);
+}
+
 .schema-note-text {
   font-size: clamp(0.85rem, 2.4vw, 1.15rem);
   font-weight: 800;
@@ -749,6 +762,15 @@ const getGridColumns = (columns: string): number => {
 
   .schema-note.schema-note--left {
     grid-column: 1 / 2;
+    margin-block: var(--space-m);
+    width: 80%;
+    max-width: clamp(80px, 30vw,160px);
+    min-height: clamp(40px, 12vw, 56px);
+    padding: var(--space-xxs) var(--space-xs);
+  }
+
+  .schema-note.schema-note--right {
+    grid-column: 3 / 4;
     margin-block: var(--space-m);
     width: 80%;
     max-width: clamp(80px, 30vw,160px);

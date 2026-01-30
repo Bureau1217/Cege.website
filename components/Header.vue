@@ -209,17 +209,34 @@ const applyLogoColors = (svg: string) => {
       .replace(/#45b76f/gi, 'var(--color-accent)')
   }
 
+  // Count total paths to identify icon vs text paths
+  const allPaths = svg.match(/<path\b[^>]*>/gi) || []
+  const totalPaths = allPaths.length
+
   let pathIndex = 0
   return svg.replace(/<path\b([^>]*?)(\/?)>/gi, (match, attrs, selfClose) => {
-    if (/fill\s*=/.test(attrs)) return match
     pathIndex += 1
-    const fill = pathIndex === 1
-      ? 'var(--color-secondary)'
-      : pathIndex === 2
-        ? 'var(--color-accent)'
-        : 'var(--color-primary)'
     const close = selfClose ? '/>' : '>'
-    return `<path${attrs} fill="${fill}"${close}`
+    // Icon paths (last 3): apply site colors
+    const iconStart = totalPaths - 2
+    if (pathIndex === iconStart) {
+      const cleaned = attrs.replace(/fill\s*=\s*"[^"]*"/gi, '')
+      return `<path${cleaned} fill="var(--color-primary)"${close}`
+    }
+    if (pathIndex === iconStart + 1) {
+      const cleaned = attrs.replace(/fill\s*=\s*"[^"]*"/gi, '')
+      return `<path${cleaned} fill="var(--color-secondary)"${close}`
+    }
+    if (pathIndex === iconStart + 2) {
+      const cleaned = attrs.replace(/fill\s*=\s*"[^"]*"/gi, '')
+      return `<path${cleaned} fill="var(--color-accent)"${close}`
+    }
+    // Text paths: apply primary color
+    if (/fill\s*=/.test(attrs)) {
+      const cleaned = attrs.replace(/fill\s*=\s*"[^"]*"/gi, '')
+      return `<path${cleaned} fill="var(--color-primary)"${close}`
+    }
+    return `<path${attrs} fill="var(--color-primary)"${close}`
   })
 }
 

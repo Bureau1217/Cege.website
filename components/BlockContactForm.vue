@@ -222,19 +222,21 @@ const handleSubmit = async () => {
     color: var(--color-primary);
 
     &::placeholder {
-      color: rgba(24, 0, 158, 0.5);
+      color: var(--color-primary);
+      opacity: 0.5;
       font-weight: 400;
     }
 
     &:hover:not(:focus) {
-      border-color: rgba(24, 0, 158, 0.8);
-      box-shadow: 0 2px 8px rgba(24, 0, 158, 0.12);
+      border-color: var(--color-primary);
+      opacity: 1;
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 12%, transparent);
     }
 
     &:focus {
       outline: none;
       border-color: var(--color-primary);
-      box-shadow: 0 4px 12px rgba(24, 0, 158, 0.18);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 18%, transparent);
       background-color: transparent;
     }
   }
