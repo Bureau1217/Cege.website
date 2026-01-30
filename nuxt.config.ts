@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     '@/assets/styles/main.scss'
   ],
   ssr: true,
+  nitro: {
+    preset: process.env.NITRO_PRESET || undefined,
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {

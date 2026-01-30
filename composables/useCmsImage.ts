@@ -24,10 +24,12 @@ export const useCmsImage = (files?: Array<any> | { value: Array<any> }) => {
     const match = value.match(/file:\/\/[a-z0-9]+/i)
     const normalized = match ? match[0] : value
     const file = filesByUuid.value[normalized] || filesByUuid.value[normalized.replace('file://', '')]
-    if (file?.url) return normalizeAbsoluteUrl(file.url)
-    if (file?.reg?.url) return normalizeAbsoluteUrl(file.reg.url)
-    if (file?.small?.url) return normalizeAbsoluteUrl(file.small.url)
-    return getFileProxyUrl(normalized) || normalized
+    // Préférer les versions redimensionnées (plus légères) à l'original
+    if (file?.reg?.url) return ensureAbsolute(file.reg.url)
+    if (file?.large?.url) return ensureAbsolute(file.large.url)
+    if (file?.small?.url) return ensureAbsolute(file.small.url)
+    if (file?.url) return ensureAbsolute(file.url)
+    return normalized
   }
 
   const getCmsImageUrl = (url: string): string => {
@@ -37,33 +39,16 @@ export const useCmsImage = (files?: Array<any> | { value: Array<any> }) => {
       return resolveFileUrl(url)
     }
 
-    if (url.startsWith('/')) return url
+    if (url.startsWith('/')) return `${cmsUrl}${url}`
 
-    return normalizeAbsoluteUrl(url)
+    return ensureAbsolute(url)
   }
 
-  const getFileProxyUrl = (value: string) => {
-    const match = value.match(/file:\/\/([a-z0-9]+)/i)
-    if (!match) return null
-    return `/api/file/${match[1]}`
-  }
-
-  const normalizeAbsoluteUrl = (value: string) => {
+  const ensureAbsolute = (value: string) => {
     if (!value) return value
-    try {
-      const cms = new URL(cmsUrl)
-      const target = new URL(value)
-      // Si l'image vient du CMS, utiliser le proxy pour éviter le mixed content
-      if (cms.origin === target.origin) {
-        return `/api/proxy-image?url=${encodeURIComponent(value)}`
-      }
-    } catch {
-      // Ignore malformed URLs and fall back to original value.
-    }
-    // Si c'est une URL HTTP externe, utiliser aussi le proxy
-    if (value.startsWith('http://')) {
-      return `/api/proxy-image?url=${encodeURIComponent(value)}`
-    }
+    // URLs relatives → préfixer avec l'URL du CMS
+    if (value.startsWith('/')) return `${cmsUrl}${value}`
+    // URLs absolues → retourner telles quelles
     return value
   }
 

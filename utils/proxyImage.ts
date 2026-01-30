@@ -1,17 +1,13 @@
 /**
- * Transforme une URL HTTP en URL proxy pour éviter le mixed content
+ * Normalise une URL d'image CMS.
+ * En production (statique), pas de proxy — on pointe directement vers le CMS.
  */
 export const proxyImageUrl = (url: string | null | undefined): string => {
   if (!url) return ''
 
-  // Si c'est déjà une URL relative ou HTTPS, ne pas modifier
-  if (url.startsWith('/') || url.startsWith('https://')) {
-    return url
-  }
-
-  // Si c'est une URL HTTP, utiliser le proxy
+  // Forcer HTTPS en production
   if (url.startsWith('http://')) {
-    return `/api/proxy-image?url=${encodeURIComponent(url)}`
+    return url.replace('http://', 'https://')
   }
 
   return url

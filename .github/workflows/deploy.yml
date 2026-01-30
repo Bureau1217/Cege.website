@@ -1,0 +1,43 @@
+name: Build & Deploy Website to IONOS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate static site
+        run: npx nuxt generate
+        env:
+          NITRO_PRESET: static
+          API_URL: https://cms.cegeswiss.com
+          API_AUTH_EMAIL: ${{ secrets.CMS_AUTH_EMAIL }}
+          API_AUTH_PASSWORD: ${{ secrets.CMS_AUTH_PASSWORD }}
+
+      - name: Deploy via SFTP
+        run: |
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST" -e "
+            set sftp:auto-confirm yes;
+            mirror -R --verbose --only-newer --delete \
+              --exclude .git/ \
+              --exclude .DS_Store \
+              .output/public/ $SFTP_REMOTE_DIR;
+            quit"
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_REMOTE_DIR: ${{ secrets.SFTP_WEBSITE_DIR }}

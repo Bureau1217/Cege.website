@@ -9,7 +9,7 @@
       <!-- Hero Section -->
       <section v-if="data.result.home.hero_titre || heroImage" id="hero" class="hero-section">
         <div v-if="heroImage" class="hero-image-wrapper">
-          <img :src="proxyImageUrl(heroImage.url)" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
+          <img :src="proxyImageUrl(heroImage.large?.url || heroImage.reg?.url || heroImage.url)" :alt="heroImage.alt || heroTitlePlain || ''" class="hero-image" />
         </div>
         <div class="hero-overlay" />
         <div class="hero-content">
