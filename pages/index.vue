@@ -124,7 +124,6 @@ type FetchData = CMS_API_Response & {
 
 // Fetch data from CMS (simple KQL, same pattern as MSS AVOCATES)
 const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
-  lazy: true,
   method: 'POST',
   body: {
     query: 'site',
