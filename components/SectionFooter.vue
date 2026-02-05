@@ -336,12 +336,11 @@ const getIconStyle = (url: string) => {
   height: 20px;
   display: inline-block;
   background-color: var(--footer-contact-icon-color);
-  mask-image: none;
   mask-mode: alpha;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
-  -webkit-mask-image: none;
+  -webkit-mask-mode: alpha;
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
