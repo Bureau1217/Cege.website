@@ -48,7 +48,6 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
         title: 'site.title',
         metaTemplate: 'site.metaTemplate.value',
         metaDescription: 'site.metaDescription.value',
-        ogTemplate: 'site.ogTemplate.value',
         ogDescription: 'site.ogDescription.value',
         ogImage: 'site.ogImage.value',
         twitterCardType: 'site.twitterCardType.value',
@@ -70,14 +69,7 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           seo: {
             metaTitle: 'page.metaTitle.value',
             metaDescription: 'page.metaDescription.value',
-            metaTemplate: 'page.metaTemplate.value',
-            useTitleTemplate: 'page.useTitleTemplate.value',
-            ogTemplate: 'page.ogTemplate.value',
-            useOgTemplate: 'page.useOgTemplate.value',
-            ogDescription: 'page.ogDescription.value',
-            ogImage: 'page.ogImage.value',
-            twitterCardType: 'page.twitterCardType.value',
-            twitterAuthor: 'page.twitterAuthor.value'
+            ogImage: 'page.ogImage.value'
           },
           formulaire_titre: 'page.formulaire_titre.value',
           formulaire_titre_couleur: 'page.formulaire_titre_couleur.value',

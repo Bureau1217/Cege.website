@@ -61,6 +61,7 @@ type CMS_API_HomePage = {
     image: CMS_API_Block[],
     notreDemarche_titre: string,
     notreDemarche: CMS_API_Block[],
+    avis_visible?: string,
     avis_titre: string,
     avis_titre_couleur?: string,
     avis_titre_taille?: string,

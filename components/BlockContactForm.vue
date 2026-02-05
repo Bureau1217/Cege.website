@@ -81,7 +81,7 @@
       </div>
 
       <div v-if="submitError" class="error-message">
-        Une erreur s'est produite. Veuillez réessayer.
+        {{ submitErrorMessage || "Une erreur s'est produite. Veuillez réessayer." }}
       </div>
     </form>
   </div>
@@ -135,26 +135,45 @@ const getButtonStyle = () => {
   return style
 }
 
+const submitErrorMessage = ref('')
+
 const handleSubmit = async () => {
   isSubmitting.value = true
   submitSuccess.value = false
   submitError.value = false
+  submitErrorMessage.value = ''
 
   try {
-    // TODO: Implement form submission to backend
-    // Pour l'instant, simulation d'envoi
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const response = await $fetch<{ status: string; errors?: Record<string, string>; message?: string }>('/api/contact', {
+      method: 'POST',
+      body: {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message,
+      },
+    })
+
+    if (response.status === 'error') {
+      submitError.value = true
+      if (response.errors) {
+        submitErrorMessage.value = Object.values(response.errors).join(', ')
+      } else {
+        submitErrorMessage.value = response.message || ''
+      }
+      return
+    }
 
     submitSuccess.value = true
 
     // Reset form
-    Object.keys(formData).forEach(key => {
-      if (typeof formData[key as keyof typeof formData] === 'boolean') {
-        formData[key as keyof typeof formData] = false as never
-      } else {
-        formData[key as keyof typeof formData] = '' as never
-      }
-    })
+    formData.name = ''
+    formData.email = ''
+    formData.phone = ''
+    formData.subject = ''
+    formData.message = ''
+    formData.consent = false
   } catch (error) {
     console.error('Error submitting form:', error)
     submitError.value = true

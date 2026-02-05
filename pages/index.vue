@@ -68,7 +68,7 @@
       </section>
 
       <!-- Avis Section -->
-      <section v-if="data.result.home.avis && data.result.home.avis.length > 0" :id="`avis`" class="section-with-anchor">
+      <section v-if="data.result.home.avis_visible !== false && data.result.home.avis && data.result.home.avis.length > 0" :id="`avis`" class="section-with-anchor">
         <SectionAvis
           :titre="formatSectionTitle(data.result.home.avis_titre, 'Avis', data.result.home.avis_titre_couleur, data.result.home.avis_titre_taille)"
           :blocks="data.result.home.avis"
@@ -76,16 +76,7 @@
         />
       </section>
 
-      <!-- Image Section (if needed) -->
-      <div v-if="data.result.home.image && data.result.home.image.length > 0">
-        <component
-          v-for="(block, idx) in data.result.home.image"
-          :key="block.id || idx"
-          :is="getImageBlockComponent(block.type)"
-          :block="block"
-          :files="data.result.home.images || []"
-        />
-      </div>
+      <!-- Image Section (disabled) -->
 
     </template>
 
@@ -132,7 +123,6 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
         title: 'site.title',
         metaTemplate: 'site.metaTemplate.value',
         metaDescription: 'site.metaDescription.value',
-        ogTemplate: 'site.ogTemplate.value',
         ogDescription: 'site.ogDescription.value',
         ogImage: 'site.ogImage.value',
         twitterCardType: 'site.twitterCardType.value',
@@ -156,14 +146,7 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           seo: {
             metaTitle: 'page.metaTitle.value',
             metaDescription: 'page.metaDescription.value',
-            metaTemplate: 'page.metaTemplate.value',
-            useTitleTemplate: 'page.useTitleTemplate.value',
-            ogTemplate: 'page.ogTemplate.value',
-            useOgTemplate: 'page.useOgTemplate.value',
-            ogDescription: 'page.ogDescription.value',
-            ogImage: 'page.ogImage.value',
-            twitterCardType: 'page.twitterCardType.value',
-            twitterAuthor: 'page.twitterAuthor.value'
+            ogImage: 'page.ogImage.value'
           },
           notreEntreprise_titre: 'page.notreEntreprise_titre.value',
           notreEntreprise_titre_couleur: 'page.notreEntreprise_titre_couleur.value',
@@ -176,6 +159,7 @@ const { data, pending } = await useFetch<FetchData>('/api/CMS_KQLRequest', {
           nosServices_cartes_taille: 'page.nosServices_cartes_taille.value',
           nosServices_cartes_couleur: 'page.nosServices_cartes_couleur.value',
           image: 'page.image.toBlocks.toArray',
+          avis_visible: 'page.avis_visible.toBool',
           avis_titre: 'page.avis_titre.value',
           avis_titre_couleur: 'page.avis_titre_couleur.value',
           avis_titre_taille: 'page.avis_titre_taille.value',

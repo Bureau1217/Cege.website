@@ -5,8 +5,8 @@
 export const proxyImageUrl = (url: string | null | undefined): string => {
   if (!url) return ''
 
-  // Forcer HTTPS en production
-  if (url.startsWith('http://')) {
+  // Forcer HTTPS en production uniquement (pas en dev/localhost)
+  if (url.startsWith('http://') && !url.includes('localhost')) {
     return url.replace('http://', 'https://')
   }
 

@@ -318,14 +318,14 @@ const footerIcons = computed(() => ({
 }
 
 .logo-image {
-  height: 40px;
+  height: 30px;
   width: auto;
   display: block;
   border-radius: 0;
 }
 
 .logo-svg :deep(svg) {
-  height: 40px;
+  height: 30px;
   width: auto;
   display: block;
 }
@@ -424,11 +424,11 @@ const footerIcons = computed(() => ({
   }
 
   .logo-image {
-    height: 34px;
+    height: 26px;
   }
 
   .logo-svg :deep(svg) {
-    height: 34px;
+    height: 26px;
   }
 }
 
@@ -447,11 +447,11 @@ const footerIcons = computed(() => ({
   }
 
   .logo-image {
-    height: 30px;
+    height: 22px;
   }
 
   .logo-svg :deep(svg) {
-    height: 30px;
+    height: 22px;
   }
 }
 </style>

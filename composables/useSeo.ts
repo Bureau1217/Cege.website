@@ -4,10 +4,13 @@ import { useCmsImage } from '@/composables/useCmsImage'
 type SeoData = {
   metaTitle?: string
   metaDescription?: string
+  ogImage?: string | string[]
+}
+
+type SiteSeoData = {
+  title?: string
   metaTemplate?: string
-  useTitleTemplate?: boolean | string
-  ogTemplate?: string
-  useOgTemplate?: boolean | string
+  metaDescription?: string
   ogDescription?: string
   ogImage?: string | string[]
   twitterCardType?: string
@@ -30,8 +33,6 @@ const pickValue = (...values: Array<unknown>) => {
   return ''
 }
 
-const normalizeBool = (value: unknown) => value === true || value === 'true'
-
 const applyTemplate = (template: string, title: string, siteTitle: string) => {
   return template
     .replace(/\{\{\s*title\s*\}\}/gi, title)
@@ -50,37 +51,28 @@ export const useSeo = (options: SeoOptions) => {
   const { getCmsImageUrl } = useCmsImage(files)
 
   const page = computed(() => (unref(options.page) || {}) as SeoData)
-  const site = computed(() => (unref(options.site) || {}) as SeoData & { title?: string })
+  const site = computed(() => (unref(options.site) || {}) as SiteSeoData)
   const pageTitle = computed(() => pickValue(unref(options.title)))
 
+  // Titre : page.metaTitle > page.title > site.title, puis on applique le template site
   const resolvedTitle = computed(() => {
     const baseTitle = pickValue(page.value.metaTitle, pageTitle.value, site.value.title || '')
-    const templateSource = normalizeBool(page.value.useTitleTemplate)
-      ? pickValue(page.value.metaTemplate, site.value.metaTemplate)
-      : ''
-    const template = templateSource || ''
+    const template = pickValue(site.value.metaTemplate)
     if (!template) return baseTitle
     return applyTemplate(template, baseTitle, site.value.title || '')
   })
 
+  // Description : page > site
   const resolvedDescription = computed(() => {
     return pickValue(page.value.metaDescription, site.value.metaDescription)
   })
 
-  const resolvedOgTitle = computed(() => {
-    const baseTitle = pickValue(page.value.metaTitle, pageTitle.value, site.value.title || '')
-    const templateSource = normalizeBool(page.value.useOgTemplate)
-      ? pickValue(page.value.ogTemplate, site.value.ogTemplate)
-      : ''
-    const template = templateSource || ''
-    if (!template) return resolvedTitle.value
-    return applyTemplate(template, baseTitle, site.value.title || '')
-  })
-
+  // OG description : page.metaDescription > site.ogDescription > site.metaDescription
   const resolvedOgDescription = computed(() => {
-    return pickValue(page.value.ogDescription, page.value.metaDescription, site.value.ogDescription, site.value.metaDescription)
+    return pickValue(page.value.metaDescription, site.value.ogDescription, site.value.metaDescription)
   })
 
+  // OG image : page > site
   const resolvedOgImage = computed(() => {
     const ref = pickValue(
       normalizeImageRef(page.value.ogImage),
@@ -90,12 +82,13 @@ export const useSeo = (options: SeoOptions) => {
     return getCmsImageUrl(ref)
   })
 
+  // Twitter : site-level uniquement
   const resolvedTwitterCard = computed(() => {
-    return pickValue(page.value.twitterCardType, site.value.twitterCardType)
+    return pickValue(site.value.twitterCardType)
   })
 
   const resolvedTwitterAuthor = computed(() => {
-    return pickValue(page.value.twitterAuthor, site.value.twitterAuthor)
+    return pickValue(site.value.twitterAuthor)
   })
 
   useHead(() => {
@@ -103,8 +96,8 @@ export const useSeo = (options: SeoOptions) => {
     if (resolvedDescription.value) {
       meta.push({ name: 'description', content: resolvedDescription.value })
     }
-    if (resolvedOgTitle.value) {
-      meta.push({ property: 'og:title', content: resolvedOgTitle.value })
+    if (resolvedTitle.value) {
+      meta.push({ property: 'og:title', content: resolvedTitle.value })
     }
     if (resolvedOgDescription.value) {
       meta.push({ property: 'og:description', content: resolvedOgDescription.value })
@@ -118,8 +111,8 @@ export const useSeo = (options: SeoOptions) => {
     if (resolvedTwitterAuthor.value) {
       meta.push({ name: 'twitter:creator', content: resolvedTwitterAuthor.value })
     }
-    if (resolvedOgTitle.value) {
-      meta.push({ name: 'twitter:title', content: resolvedOgTitle.value })
+    if (resolvedTitle.value) {
+      meta.push({ name: 'twitter:title', content: resolvedTitle.value })
     }
     if (resolvedOgDescription.value) {
       meta.push({ name: 'twitter:description', content: resolvedOgDescription.value })
