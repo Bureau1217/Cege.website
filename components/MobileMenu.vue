@@ -73,9 +73,12 @@ watch(() => route.fullPath, () => {
   display: none;
   background: var(--color-primary);
   padding: var(--space-l) calc(var(--page-gutter-mobile) * 2);
+  padding-bottom: calc(var(--space-l) + env(safe-area-inset-bottom, 0px));
   flex-direction: column;
   gap: var(--space-l);
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 60px);
+  min-height: calc(100dvh - 60px);
+  margin-top: 0;
 }
 
 .menu-list {

@@ -136,6 +136,7 @@ const getButtonStyle = () => {
 }
 
 const submitErrorMessage = ref('')
+const config = useRuntimeConfig()
 
 const handleSubmit = async () => {
   isSubmitting.value = true
@@ -144,7 +145,7 @@ const handleSubmit = async () => {
   submitErrorMessage.value = ''
 
   try {
-    const response = await $fetch<{ status: string; errors?: Record<string, string>; message?: string }>('/api/contact', {
+    const response = await $fetch<{ status: string; errors?: Record<string, string>; message?: string }>(`${config.public.kirbyUrl}/api/contact/submit`, {
       method: 'POST',
       body: {
         name: formData.name,

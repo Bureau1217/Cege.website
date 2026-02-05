@@ -46,14 +46,11 @@ export const useCmsImage = (files?: Array<any> | { value: Array<any> }) => {
 
   const ensureAbsolute = (value: string) => {
     if (!value) return value
-    // URLs du CMS → convertir en chemin relatif pour passer par le proxy Nuxt (/media/...)
-    // Cela évite les problèmes CORS (ex: mask-image SVG cross-origin)
-    if (value.startsWith(cmsUrl)) {
-      return value.replace(cmsUrl, '')
+    // URLs relatives → préfixer avec l'URL du CMS
+    if (value.startsWith('/')) {
+      return `${cmsUrl}${value}`
     }
-    // URLs relatives → retourner telles quelles (passent par le proxy Nuxt)
-    if (value.startsWith('/')) return value
-    // URLs absolues d'autres domaines → retourner telles quelles
+    // URLs absolues → retourner telles quelles
     return value
   }
 
