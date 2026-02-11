@@ -1,5 +1,6 @@
 import { computed, unref } from 'vue'
 import { useCmsImage } from '@/composables/useCmsImage'
+import { useRoute, useRuntimeConfig } from '#imports'
 
 type SeoData = {
   metaTitle?: string
@@ -22,6 +23,7 @@ type SeoOptions = {
   site: any
   title: any
   files?: any
+  canonicalPath?: string
 }
 
 const pickValue = (...values: Array<unknown>) => {
@@ -47,8 +49,18 @@ const normalizeImageRef = (value: unknown) => {
 }
 
 export const useSeo = (options: SeoOptions) => {
+  const route = useRoute()
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string
+
   const files = computed(() => unref(options.files) || [])
   const { getCmsImageUrl } = useCmsImage(files)
+
+  const canonicalUrl = computed(() => {
+    const path = options.canonicalPath || route.path
+    const cleanPath = path === '/' ? '' : path.replace(/\/$/, '')
+    return `${siteUrl}${cleanPath}`
+  })
 
   const page = computed(() => (unref(options.page) || {}) as SeoData)
   const site = computed(() => (unref(options.site) || {}) as SiteSeoData)
@@ -93,6 +105,14 @@ export const useSeo = (options: SeoOptions) => {
 
   useHead(() => {
     const meta: Array<Record<string, string>> = []
+    const link: Array<Record<string, string>> = []
+
+    // Canonical URL
+    link.push({ rel: 'canonical', href: canonicalUrl.value })
+
+    // Open Graph URL
+    meta.push({ property: 'og:url', content: canonicalUrl.value })
+
     if (resolvedDescription.value) {
       meta.push({ name: 'description', content: resolvedDescription.value })
     }
@@ -123,7 +143,8 @@ export const useSeo = (options: SeoOptions) => {
 
     return {
       title: resolvedTitle.value || undefined,
-      meta
+      meta,
+      link
     }
   })
 }

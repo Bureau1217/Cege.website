@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import { useSchemaOrg } from '@/composables/useSchemaOrg'
+
 const isReady = ref(false)
 
 onMounted(() => {
@@ -24,6 +26,29 @@ onMounted(() => {
     isReady.value = true
   }, 400)
 })
+
+// Schema.org structured data for Google
+const { addLocalBusiness, addWebSite } = useSchemaOrg()
+
+addLocalBusiness({
+  name: 'CéGé Swiss',
+  description: 'Contrôles électriques, photovoltaïques et bornes de recharge. Sécurité, conformité et fiabilité des installations en Suisse romande.',
+  telephone: '+41 79 604 88 88',
+  email: 'erik@cegeswiss.com',
+  address: {
+    streetAddress: 'Chemin de la Verseuse 7/9',
+    addressLocality: 'Aïre',
+    postalCode: '1219',
+    addressCountry: 'CH',
+  },
+  openingHours: ['Mo-Fr 08:00-18:00'],
+  priceRange: '$$',
+})
+
+addWebSite(
+  'CéGé Swiss',
+  'Contrôles électriques pour vérifier la sécurité, la conformité et le bon fonctionnement de vos installations en Suisse romande.'
+)
 </script>
 
 <style>
