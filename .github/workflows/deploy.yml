@@ -48,3 +48,4 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           local_path: ./.output/public/*
           remote_path: ${{ secrets.SFTP_WEBSITE_DIR }}
+          sftp_only: true
