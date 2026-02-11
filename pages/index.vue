@@ -363,7 +363,7 @@ const controlePhotovoltaiqueImage = computed(() => {
 
 .hero-section {
   position: relative;
-  min-height: 85vh;
+  min-height: 60vh;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -469,6 +469,10 @@ section.section-with-anchor {
   @media (max-width: 768px) {
     scroll-margin-top: 70px;
   }
+}
+
+#notre-entreprise :deep(.v-style-block) {
+  margin-top: 0;
 }
 
 // Services Section

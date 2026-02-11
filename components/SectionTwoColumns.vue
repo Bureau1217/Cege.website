@@ -248,6 +248,11 @@ const getFeatureItemStyle = (item: any) => {
   gap: var(--space-xl);
 }
 
+.column-left .column-text,
+.column-right .column-text {
+  text-align: justify;
+}
+
 .column-image {
   width: 100%;
   height: auto;

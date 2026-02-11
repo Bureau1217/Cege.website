@@ -196,6 +196,11 @@ useSeo({
   width: 100%;
 }
 
+// Réduire l'espace entre le header et le premier bloc
+.v-services :deep(> *:first-child .v-style-block) {
+  margin-top: -var(--space-l);
+}
+
 .v-services :deep(.column-list ul) {
   list-style: none;
   padding-left: 0;
