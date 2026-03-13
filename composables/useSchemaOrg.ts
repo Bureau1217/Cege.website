@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 
 type LocalBusinessOptions = {
+  type?: string | string[]
   name: string
   description?: string
   telephone?: string
@@ -10,15 +11,22 @@ type LocalBusinessOptions = {
     addressLocality?: string
     postalCode?: string
     addressCountry?: string
+    addressRegion?: string
   }
   geo?: {
     latitude?: number
     longitude?: number
   }
+  areaServed?: Array<{
+    type: string
+    name: string
+  }>
+  services?: string[]
   openingHours?: string[]
   priceRange?: string
   image?: string
   logo?: string
+  sameAs?: string[]
 }
 
 export const useSchemaOrg = () => {
@@ -28,7 +36,7 @@ export const useSchemaOrg = () => {
   const addLocalBusiness = (options: LocalBusinessOptions) => {
     const schema: Record<string, any> = {
       '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
+      '@type': options.type || 'LocalBusiness',
       '@id': `${siteUrl}/#organization`,
       name: options.name,
       url: siteUrl,
@@ -61,6 +69,27 @@ export const useSchemaOrg = () => {
       }
     }
 
+    if (options.areaServed?.length) {
+      schema.areaServed = options.areaServed.map(area => ({
+        '@type': area.type,
+        name: area.name,
+      }))
+    }
+
+    if (options.services?.length) {
+      schema.hasOfferCatalog = {
+        '@type': 'OfferCatalog',
+        name: 'Services de contrôle électrique',
+        itemListElement: options.services.map(service => ({
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: service,
+          },
+        })),
+      }
+    }
+
     if (options.openingHours?.length) {
       schema.openingHours = options.openingHours
     }
@@ -75,6 +104,10 @@ export const useSchemaOrg = () => {
 
     if (options.logo) {
       schema.logo = options.logo
+    }
+
+    if (options.sameAs?.length) {
+      schema.sameAs = options.sameAs
     }
 
     useHead({
@@ -132,9 +165,35 @@ export const useSchemaOrg = () => {
     })
   }
 
+  const addSiteNavigation = (items: Array<{ name: string; url: string; description?: string }>) => {
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      '@id': `${siteUrl}/#navigation`,
+      name: 'Navigation principale',
+      itemListElement: items.map((item, index) => ({
+        '@type': 'SiteNavigationElement',
+        position: index + 1,
+        name: item.name,
+        description: item.description || undefined,
+        url: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+      })),
+    }
+
+    useHead({
+      script: [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify(schema),
+        },
+      ],
+    })
+  }
+
   return {
     addLocalBusiness,
     addWebSite,
     addBreadcrumbs,
+    addSiteNavigation,
   }
 }

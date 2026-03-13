@@ -28,27 +28,63 @@ onMounted(() => {
 })
 
 // Schema.org structured data for Google
-const { addLocalBusiness, addWebSite } = useSchemaOrg()
+const { addLocalBusiness, addWebSite, addSiteNavigation } = useSchemaOrg()
 
 addLocalBusiness({
-  name: 'CéGé Swiss',
-  description: 'Contrôles électriques, photovoltaïques et bornes de recharge. Sécurité, conformité et fiabilité des installations en Suisse romande.',
+  type: ['Electrician', 'LocalBusiness', 'ProfessionalService'],
+  name: 'CéGé GEORGES Erik',
+  description: 'Électricien expert en contrôle électrique et sécurité à Genève et en Suisse romande. Contrôles OIBT, diagnostics de conformité, contrôle des installations électriques, bornes de recharge et photovoltaïque.',
   telephone: '+41 79 604 88 88',
   email: 'erik@cegeswiss.com',
   address: {
     streetAddress: 'Chemin de la Verseuse 7/9',
     addressLocality: 'Aïre',
+    addressRegion: 'Genève',
     postalCode: '1219',
     addressCountry: 'CH',
   },
+  geo: {
+    latitude: 46.1983,
+    longitude: 6.1008,
+  },
+  areaServed: [
+    { type: 'City', name: 'Genève' },
+    { type: 'State', name: 'Canton de Genève' },
+    { type: 'State', name: 'Canton de Vaud' },
+    { type: 'AdministrativeArea', name: 'Suisse romande' },
+  ],
+  services: [
+    'Contrôle électrique OIBT',
+    'Contrôle des installations électriques',
+    'Diagnostic de conformité électrique',
+    'Sécurité électrique',
+    'Contrôle de bornes de recharge',
+    'Contrôle d\'installations photovoltaïques',
+  ],
   openingHours: ['Mo-Fr 08:00-18:00'],
   priceRange: '$$',
+  logo: 'https://cegeswiss.com/Favicon_Cege.png',
+  image: 'https://cegeswiss.com/Opengraph_Cege.png',
 })
 
 addWebSite(
-  'CéGé Swiss',
-  'Contrôles électriques pour vérifier la sécurité, la conformité et le bon fonctionnement de vos installations en Suisse romande.'
+  'CéGé GEORGES Erik - Contrôle électrique & sécurité',
+  'Expert en contrôle électrique et sécurité à Genève. Contrôles périodiques OIBT, bornes de recharge et installations photovoltaïques en Suisse romande.'
 )
+
+// Navigation elements for Google sitelinks
+addSiteNavigation([
+  {
+    name: 'Services',
+    url: '/services',
+    description: 'Contrôles électriques OIBT, bornes de recharge et installations photovoltaïques. Expertise et conformité garanties.'
+  },
+  {
+    name: 'Contact',
+    url: '/contact',
+    description: 'Contactez CéGé GEORGES Erik pour vos contrôles électriques. Intervention rapide en Suisse romande.'
+  }
+])
 </script>
 
 <style>

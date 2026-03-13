@@ -5,7 +5,7 @@
         <div class="mentions-grid">
           <div class="mentions-left">
             <h1 class="mentions-title">
-              {{ mentions.title || 'Mentions legales' }}
+              {{ mentions.title || 'Mentions légales' }}
             </h1>
           </div>
           <div class="mentions-right">
@@ -93,7 +93,7 @@ const seoFiles = computed(() => [
 useSeo({
   page: mentionsSeo,
   site: siteSeo,
-  title: computed(() => (data.value?.result?.mentions as any)?.title || 'Mentions legales'),
+  title: computed(() => (data.value?.result?.mentions as any)?.title || 'Mentions légales'),
   files: seoFiles
 })
 </script>

@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /test
+Disallow: /simple
 
 Sitemap: https://cegeswiss.com/sitemap.xml

@@ -106,7 +106,7 @@ type CMS_API_ContactPage = {
     formulaire: CMS_API_Block[]
 }
 
-// Type pour la page Mentions legales
+// Type pour la page Mentions légales
 type CMS_API_MentionsLegalesPage = {
     title: string,
     slug: string,

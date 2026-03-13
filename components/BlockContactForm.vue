@@ -54,6 +54,18 @@
         ></textarea>
       </div>
 
+      <!-- Honeypot anti-spam (invisible pour les humains, piège les bots) -->
+      <div class="form-field-honeypot" aria-hidden="true">
+        <label for="website">Website</label>
+        <input
+          type="text"
+          id="website"
+          v-model="formData.honeypot"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+
       <div v-if="block.content.requireconsent === 'true'" class="form-field checkbox-field form-field-full">
         <input
           type="checkbox"
@@ -100,7 +112,8 @@ const formData = reactive({
   phone: '',
   subject: '',
   message: '',
-  consent: false
+  consent: false,
+  honeypot: '' // Champ piège anti-spam
 })
 
 const isSubmitting = ref(false)
@@ -139,6 +152,13 @@ const submitErrorMessage = ref('')
 const config = useRuntimeConfig()
 
 const handleSubmit = async () => {
+  // Anti-spam: si le honeypot est rempli, c'est un bot
+  if (formData.honeypot) {
+    // Simule un succès pour ne pas alerter le bot
+    submitSuccess.value = true
+    return
+  }
+
   isSubmitting.value = true
   submitSuccess.value = false
   submitError.value = false
@@ -354,6 +374,18 @@ const handleSubmit = async () => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+// Honeypot - caché visuellement mais accessible aux bots
+.form-field-honeypot {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {

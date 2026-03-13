@@ -45,7 +45,7 @@ import { computed, onMounted, ref } from 'vue'
 const { siteData } = await useSiteSettings()
 const consent = useCookie<string | null>('cege_cookie_consent', {
   sameSite: 'lax',
-  maxAge: 60 * 60 * 24 * 365
+  maxAge: 60 * 60 * 24 * 90 // 90 jours
 })
 
 const isVisible = ref(false)

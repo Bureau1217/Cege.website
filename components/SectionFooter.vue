@@ -126,7 +126,7 @@ const footerNavItems = [
   { to: '/', label: 'Accueil' },
   { to: '/services', label: 'Nos Services' },
   { to: '/contact', label: 'Nous Contacter' },
-  { to: '/mentions-legales', label: 'Mentions legales' }
+  { to: '/mentions-legales', label: 'Mentions légales' }
 ]
 
 const footerData = computed(() => {
